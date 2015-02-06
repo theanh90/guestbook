@@ -1,6 +1,6 @@
 from google.appengine.ext import ndb
 
-DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
+DEFAULT_GUESTBOOK_NAME = 'de_name'
 
 # We set a parent key on the 'Greetings' to ensure that they are all in the same
 # entity group. Queries across the single entity group will be consistent.

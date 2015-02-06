@@ -35,7 +35,7 @@ class MainView(TemplateView):
 
         current_user = users.get_current_user()
         if current_user:
-            url = users.create_logout_url(self.request.get_full_path)
+            url = users.create_logout_url(self.request.get_full_path())
             url_linktext = 'Logout'
         else:
             url = users.create_login_url(self.request.get_full_path())
@@ -51,14 +51,20 @@ class MainView(TemplateView):
         return context
 
 class SignForm(forms.Form):
-    greeting_message = forms.CharField(label= 'Greeting message', widget=forms.Textarea, required=True, max_length=100, )
+    greeting_message = forms.CharField(label= 'Greeting message', widget=forms.Textarea, required=True, max_length=100 )
     book_name = forms.CharField(label='Guestbook name', max_length=10, required=True)
 
 
 class SignView(FormView):
+
     template_name = 'guestbook/sign.html'
     form_class = SignForm
-    success_url = '/'
+
+    def get_initial(self):
+        guestbook_name = self.request.GET.get('guestbook_name', DEFAULT_GUESTBOOK_NAME)
+        initial = super(SignView, self).get_initial()
+        initial['book_name'] = guestbook_name
+        return initial
 
     def form_valid(self, form):
         if self.request.method == 'POST':
@@ -74,4 +80,4 @@ class SignView(FormView):
             greeting.put()
 
             return HttpResponseRedirect('/map/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
-
+            return super(SignView, self).form_valid(form)
