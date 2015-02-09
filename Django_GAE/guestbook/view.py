@@ -4,7 +4,7 @@ from django.views.generic.edit import FormView
 
 from google.appengine.api import users
 
-from guestbook.model import Greeting, Author, DEFAULT_GUESTBOOK_NAME
+from guestbook.model import Greeting, Guestbook, Author, DEFAULT_GUESTBOOK_NAME
 
 import urllib
 
@@ -17,7 +17,7 @@ class MainView(TemplateView):
 
         guestbook_name = self.request.GET.get("guestbook_name", DEFAULT_GUESTBOOK_NAME)
 
-        greetings = Greeting().get_list(guestbook_name, 10)
+        greetings = Greeting.get_list(guestbook_name, 10)
 
         current_user = users.get_current_user()
         if current_user:
@@ -41,18 +41,14 @@ class SignForm(forms.Form):
 
 class SignView(FormView):
 
-    def getCleaned_data(self, form):
-        guestbook_name = form.cleaned_data['book_name']
-        content = form.cleaned_data['greeting_message']
-        data =  {'name' : guestbook_name, 'content' : content }
-        return data
-
     template_name = 'guestbook/sign.html'
     form_class = SignForm
 
-    def get_success_url(self):
-        guestbook_name = self.request.POST.get('book_name', DEFAULT_GUESTBOOK_NAME)
-        return ('/map/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
+    def getCleaned_data(self, form):
+        guestbook_name = form.cleaned_data['book_name']
+        content = form.cleaned_data['greeting_message']
+        data = {'name': guestbook_name, 'content': content }
+        return data
 
     def get_initial(self):
         guestbook_name = self.request.GET.get('guestbook_name', DEFAULT_GUESTBOOK_NAME)
@@ -62,7 +58,7 @@ class SignView(FormView):
 
     def form_valid(self, form):
         guestbook_name = self.getCleaned_data(form)['name']
-        greeting = Greeting(parent=Greeting().guestbook_key(guestbook_name))
+        greeting = Greeting(parent=Guestbook.get_key(guestbook_name))
         if users.get_current_user():
             greeting.author = Author(
                     identity=users.get_current_user().user_id(),
@@ -70,5 +66,6 @@ class SignView(FormView):
 
         greeting.content = self.getCleaned_data(form)['content']
         greeting.put()
+        SignView.success_url = ('/map/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
         return super(SignView, self).form_valid(form)
 

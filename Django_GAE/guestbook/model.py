@@ -13,26 +13,29 @@ class Author(ndb.Model):
     identity = ndb.StringProperty(indexed=False)
     email = ndb.StringProperty(indexed=False)
 
+class Guestbook(ndb.Model):
+    @classmethod
+    def get_key(self, guestbook_name=DEFAULT_GUESTBOOK_NAME):
+        return ndb.Key(Guestbook, guestbook_name)
+
 class Greeting(ndb.Model):
     '''Models an individual Guestbook entry.'''
     author = ndb.StructuredProperty(Author)
     content = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
-    def guestbook_key(self, guestbook_name=DEFAULT_GUESTBOOK_NAME):
-        '''Constructs a Datastore key for a Guestbook entity with guestbook_name.'''
-        return ndb.Key(Greeting, guestbook_name)
-
     #Use Ggoogle Api Memcache for caching query result.
-    def get_list(self, guestbook_name, count):
+    @classmethod
+    def get_list(self, guestbook_name=DEFAULT_GUESTBOOK_NAME, count=10):
         greetings = memcache.get('%s:greetings' % guestbook_name)
         if greetings:
             return greetings
         else: #query from Datastore
-            greetings_query = Greeting.query(ancestor=self.guestbook_key(guestbook_name)).order(-Greeting.date)
+            greetings_query = Greeting.query(ancestor=Guestbook.get_key(guestbook_name)).order(-Greeting.date)
             greetings = greetings_query.fetch(count)
             #add greeting to memcache
             if greetings:
                 if not memcache.set(guestbook_name, greetings, count):
                     logging.error('Memcache set failed.')
         return greetings
+
