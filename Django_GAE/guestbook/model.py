@@ -15,8 +15,8 @@ class Author(ndb.Model):
 
 class Guestbook(ndb.Model):
     @classmethod
-    def get_key(self, guestbook_name=DEFAULT_GUESTBOOK_NAME):
-        return ndb.Key(Guestbook, guestbook_name)
+    def get_key(cls, guestbook_name=DEFAULT_GUESTBOOK_NAME):
+        return ndb.Key(cls, guestbook_name)
 
 class Greeting(ndb.Model):
     '''Models an individual Guestbook entry.'''
@@ -26,7 +26,7 @@ class Greeting(ndb.Model):
 
     #Use Ggoogle Api Memcache for caching query result.
     @classmethod
-    def get_list(self, guestbook_name=DEFAULT_GUESTBOOK_NAME, count=10):
+    def get_list(cls, guestbook_name=DEFAULT_GUESTBOOK_NAME, count=10):
         greetings = memcache.get('%s:greetings' % guestbook_name)
         if greetings:
             return greetings

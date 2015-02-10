@@ -44,7 +44,7 @@ class SignView(FormView):
     template_name = 'guestbook/sign.html'
     form_class = SignForm
 
-    def getCleaned_data(self, form):
+    def get_cleaned_data(self, form):
         guestbook_name = form.cleaned_data['book_name']
         content = form.cleaned_data['greeting_message']
         data = {'name': guestbook_name, 'content': content }
@@ -57,14 +57,14 @@ class SignView(FormView):
         return initial
 
     def form_valid(self, form):
-        guestbook_name = self.getCleaned_data(form)['name']
+        guestbook_name = self.get_cleaned_data(form)['name']
         greeting = Greeting(parent=Guestbook.get_key(guestbook_name))
         if users.get_current_user():
             greeting.author = Author(
                     identity=users.get_current_user().user_id(),
                     email=users.get_current_user().email())
 
-        greeting.content = self.getCleaned_data(form)['content']
+        greeting.content = self.get_cleaned_data(form)['content']
         greeting.put()
         SignView.success_url = ('/map/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
         return super(SignView, self).form_valid(form)
