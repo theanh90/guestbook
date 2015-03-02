@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% autoescape on %}
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
+  </head>
+  <body>
+    <p>Guestbook name: {{guestbook_name}}</p>
+    <p>List of greeting </p><hr>
+    {% if greetings %}
+        {% for greeting in greetings %}
+          {% if greeting.author %}
+            <b>{{ greeting.author.email }}
+            {% if current_user and current_user.user_id == greeting.author.identity %}
+                (You)
+                {% else %}
+            {% endif %}
+            </b> wrote: -
+          {% else %}
+           An anonymous person wrote: -
+          {% endif %}
+          {{ greeting.content }} -
+            Date: {{greeting.date}}
+            <hr>
+        {% endfor %}
+        {% else %}
+            <p><i>This Guestbook is empty!</i></p><hr>
+    {% endif %}
+
+    <a href="/sign/?guestbook_name={{guestbook_name}}">Add greeting</a>
+    </br>
+
+    <a href="{{ url }}">{{ url_linktext }}</a>
+
+  </body>
+</html>
+{% endautoescape on %}
