@@ -1,8 +1,9 @@
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
-import logging
-
 from google.appengine.api import users
+from google.appengine.api import taskqueue
+
+import logging
 
 DEFAULT_GUESTBOOK_NAME = 'de_name'
 
@@ -46,12 +47,20 @@ class Greeting(ndb.Model):
 			return greetings
 
 	@classmethod
+	@ndb.transactional(xg=True)
 	def put_from_dict(cls, dictionary):
 		"""Save greeting to database"""
+
+		email = ""
 		greeting = cls(parent=Guestbook.get_key(dictionary['name']))
 		if users.get_current_user():
+			email = users.get_current_user().email()
 			greeting.author = Author(
 				identity=users.get_current_user().user_id(),
-				email=users.get_current_user().email())
+				email=email)
 		greeting.content = dictionary['content']
 		greeting.put()
+
+		taskqueue.add(
+			url='/sendmail/', params={'sender': email}, transactional=True,
+			method='GET')

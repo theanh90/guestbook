@@ -1,9 +1,13 @@
 from google.appengine.api import users
+from google.appengine.api import mail
 import urllib
 
+from django.views.generic import View
 from django.views.generic.base import TemplateView
 from django import forms
 from django.views.generic.edit import FormView
+
+from django.http import HttpResponse
 
 from guestbook.model import Greeting, Guestbook, Author, DEFAULT_GUESTBOOK_NAME
 
@@ -64,3 +68,18 @@ class SignView(FormView):
 
 		self.success_url = ('/map/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
 		return super(SignView, self).form_valid(form)
+
+
+class SendMail(View):
+
+	def get(self, request, *args, **kwargs):
+		sender = request.GET.get('sender')
+		if sender:
+			message = mail.EmailMessage()
+			message.to = "Receiver <abc@gmail.com>"
+			message.body = "Test function send mail in Guestbook app!!"
+			message.sender = "Sender <%s>" % sender
+			message.subject = "Guestbook sender"
+
+			message.send()
+		return HttpResponse()
