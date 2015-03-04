@@ -1,3 +1,5 @@
+import datetime
+
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 import logging
@@ -26,7 +28,9 @@ class Guestbook(ndb.Model):
 class Greeting(ndb.Model):
 	'''Models an individual Guestbook entry.'''
 	author = ndb.StructuredProperty(Author)
-	content = ndb.StringProperty(indexed=False)
+	content = ndb.StringProperty(indexed=True)
+	user_update = ndb.StringProperty(indexed=True)
+	date_update = ndb.DateTimeProperty()
 	date = ndb.DateTimeProperty(auto_now_add=True)
 
 	# Use Ggoogle Api Memcache for caching query result.
@@ -36,7 +40,7 @@ class Greeting(ndb.Model):
 		if greetings:
 			return greetings
 		else:  # query from Datastore
-			greetings_query = Greeting.query(
+			greetings_query = cls.query(
 				ancestor=Guestbook.get_key(guestbook_name)).order(-Greeting.date)
 			greetings = greetings_query.fetch(count)
 			# add greeting to memcache
@@ -55,3 +59,23 @@ class Greeting(ndb.Model):
 				email=users.get_current_user().email())
 		greeting.content = dictionary['content']
 		greeting.put()
+
+	@classmethod
+	def get_greeting(cls, key):
+		logging.error(key)
+		greeting = ndb.Key(urlsafe=key).get()
+		return greeting
+
+	@classmethod
+	def update_message(cls, key, message):
+		user = users.get_current_user().email()
+		greeting = ndb.Key(urlsafe=key).get()
+		greeting.content = message
+		greeting.user_update = user
+		greeting.date_update = datetime.datetime.now()
+		greeting.put()
+
+	@classmethod
+	def delete_greeting(cls, key):
+		greeting = ndb.Key(urlsafe=key).get()
+		greeting.key.delete()

@@ -1,9 +1,12 @@
 from google.appengine.api import users
 import urllib
+import logging
 
 from django.views.generic.base import TemplateView
 from django import forms
 from django.views.generic.edit import FormView
+from django.views.generic import View
+from django.http import HttpResponseRedirect
 
 from guestbook.model import Greeting, Guestbook, Author, DEFAULT_GUESTBOOK_NAME
 
@@ -17,14 +20,17 @@ class MainView(TemplateView):
 		greetings = Greeting.get_list(guestbook_name, 10)
 
 		current_user = users.get_current_user()
+		user_admin = False
 		if current_user:
 			url = users.create_logout_url(self.request.get_full_path())
 			url_linktext = 'Logout'
+			user_admin = users.is_current_user_admin()
 		else:
 			url = users.create_login_url(self.request.get_full_path())
 			url_linktext = 'Login'
 
 		context = super(MainView, self).get_context_data(**kwargs)
+		context['admin'] = user_admin
 		context['current_user'] = current_user
 		context['greetings'] = greetings
 		context['guestbook_name'] = guestbook_name
@@ -37,6 +43,12 @@ class SignForm(forms.Form):
 	greeting_message = forms.CharField(
 		label="Greeting message", widget=forms.Textarea, required=True, max_length=100)
 	book_name = forms.CharField(label='Guestbook name', max_length=10, required=True)
+
+
+class EditForm(forms.Form):
+	message = forms.CharField(label='Author', max_length=10, required=True)
+	key = forms.CharField(widget=forms.HiddenInput)
+	book_name = forms.CharField(widget=forms.HiddenInput)
 
 
 class SignView(FormView):
@@ -54,6 +66,7 @@ class SignView(FormView):
 		guestbook_name = self.request.GET.get('guestbook_name', DEFAULT_GUESTBOOK_NAME)
 		initial = super(SignView, self).get_initial()
 		initial['book_name'] = guestbook_name
+		initial['author'] = guestbook_name
 		return initial
 
 	def form_valid(self, form):
@@ -64,3 +77,38 @@ class SignView(FormView):
 
 		self.success_url = ('/map/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
 		return super(SignView, self).form_valid(form)
+
+
+class GreetingEditView(FormView):
+
+	template_name = 'guestbook/edit.html'
+	form_class = EditForm
+
+	def get_initial(self):
+		guestbook_name = self.request.GET.get('guestbook_name', DEFAULT_GUESTBOOK_NAME)
+		key = self.request.GET.get('key')
+		if key:
+			greeting = Greeting.get_greeting(key)
+			initial = super(GreetingEditView, self).get_initial()
+			initial['message'] = greeting.content
+			initial['book_name'] = guestbook_name
+			initial['key'] = key
+			return initial
+
+	def form_valid(self, form):
+		guestbook_name = form.cleaned_data['book_name']
+		message = form.cleaned_data['message']
+		key = form.cleaned_data['key']
+		Greeting.update_message(key, message)
+
+		self.success_url = ('/map/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
+		return super(GreetingEditView, self).form_valid(form)
+
+
+class GreetingDeleteView(View):
+	def get(self, request, *args, **kwargs):
+		key = self.request.GET.get('key')
+		guestbook_name = self.request.GET.get('guestbook_name')
+		Greeting.delete_greeting(key)
+
+		return HttpResponseRedirect('/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
