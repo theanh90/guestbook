@@ -6,6 +6,7 @@ import logging
 
 from google.appengine.api import users
 
+
 DEFAULT_GUESTBOOK_NAME = 'de_name'
 
 # We set a parent key on the 'Greetings' to ensure that they are all in the same
@@ -62,7 +63,6 @@ class Greeting(ndb.Model):
 
 	@classmethod
 	def get_greeting(cls, key):
-		logging.error(key)
 		greeting = ndb.Key(urlsafe=key).get()
 		return greeting
 

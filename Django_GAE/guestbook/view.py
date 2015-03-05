@@ -1,6 +1,5 @@
 from google.appengine.api import users
 import urllib
-import logging
 
 from django.views.generic.base import TemplateView
 from django import forms
@@ -20,17 +19,15 @@ class MainView(TemplateView):
 		greetings = Greeting.get_list(guestbook_name, 10)
 
 		current_user = users.get_current_user()
-		user_admin = False
 		if current_user:
 			url = users.create_logout_url(self.request.get_full_path())
 			url_linktext = 'Logout'
-			user_admin = users.is_current_user_admin()
 		else:
 			url = users.create_login_url(self.request.get_full_path())
 			url_linktext = 'Login'
 
 		context = super(MainView, self).get_context_data(**kwargs)
-		context['admin'] = user_admin
+		context['admin'] = users.is_current_user_admin()
 		context['current_user'] = current_user
 		context['greetings'] = greetings
 		context['guestbook_name'] = guestbook_name
@@ -46,7 +43,7 @@ class SignForm(forms.Form):
 
 
 class EditForm(forms.Form):
-	message = forms.CharField(label='Author', max_length=10, required=True)
+	message = forms.CharField(label='Message', max_length=10, required=True)
 	key = forms.CharField(widget=forms.HiddenInput)
 	book_name = forms.CharField(widget=forms.HiddenInput)
 

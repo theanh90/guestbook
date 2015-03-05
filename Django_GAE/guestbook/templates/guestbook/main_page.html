@@ -11,7 +11,7 @@
         {% for greeting in greetings %}
           {% if greeting.author %}
             <b>{{ greeting.author.email }}
-            {% if current_user and current_user.user_id == greeting.author.identity %}
+            {% if user and user.user_id == greeting.author.identity %}
                 (You)
                 {% else %}
             {% endif %}
@@ -21,19 +21,19 @@
           {% endif %}
           {{ greeting.content }} -
             Date: {{greeting.date}}
-            {% if admin %}
-               [ <a href="/delete/?key={{greeting.key.urlsafe}}&guestbook_name={{guestbook_name}}">Delete</a>
-                <a href="/edit/?key={{greeting.key.urlsafe}}&guestbook_name={{guestbook_name}}">Edit</a> ]
-            {% elif current_user and current_user.user_id == greeting.author.identity %}
-                [<a href="/edit/?key={{greeting.key.urlsafe}}&guestbook_name={{guestbook_name}}">Edit</a> ]
-            {% endif %}
-
             {% if greeting.user_update %}
                 - updated by: {{greeting.user_update}}
             {% endif %}
 
             {% if greeting.date_update %}
                 - Time updated: {{greeting.date_update}}
+            {% endif %}
+
+            {% if admin %}
+               [ <a href="/delete/?key={{greeting.key.urlsafe}}&guestbook_name={{guestbook_name}}">Delete</a>
+                <a href="/edit/?key={{greeting.key.urlsafe}}&guestbook_name={{guestbook_name}}">Edit</a> ]
+            {% elif current_user and current_user.user_id == greeting.author.identity %}
+                [<a href="/edit/?key={{greeting.key.urlsafe}}&guestbook_name={{guestbook_name}}">Edit</a> ]
             {% endif %}
             <hr>
         {% endfor %}
