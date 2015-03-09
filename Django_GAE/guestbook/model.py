@@ -1,11 +1,9 @@
 import datetime
+import logging
 
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
-import logging
-
 from google.appengine.api import users
-
 
 DEFAULT_GUESTBOOK_NAME = 'de_name'
 
@@ -51,6 +49,13 @@ class Greeting(ndb.Model):
 			return greetings
 
 	@classmethod
+	def get_list_paging(cls, guestbook_name, count, cursor):
+		greetings_query = cls.query(
+			ancestor=Guestbook.get_key(guestbook_name)).order(-Greeting.date)
+		result = greetings_query.fetch_page(count, start_cursor=ndb.Cursor(urlsafe=cursor))
+		return result
+
+	@classmethod
 	def put_from_dict(cls, dictionary):
 		"""Save greeting to database"""
 		greeting = cls(parent=Guestbook.get_key(dictionary['name']))
@@ -79,3 +84,23 @@ class Greeting(ndb.Model):
 	def delete_greeting(cls, key):
 		greeting = ndb.Key(urlsafe=key).get()
 		greeting.key.delete()
+
+	@classmethod
+	def greetings_to_dic(cls, guestbook_name=DEFAULT_GUESTBOOK_NAME, count=10, cursor=None):
+		greetings, next_curs, more = cls.get_list_paging(guestbook_name, count, cursor)
+		list = []
+		for greeting in greetings:
+			list.append(greeting.entity_to_dic())
+
+		return list, next_curs, more
+
+	def entity_to_dic(cls):
+		dict = {}
+		dict['content'] = cls.content
+		dict['date'] = cls.date.strftime("%Y-%m-%d %H:%M")
+		if cls.author:
+			dict['author'] = {'identity': cls.author.identity, 'email': cls.author.email}
+		if cls.user_update:
+			dict['user_update'] = cls.user_update
+			dict['date_update'] = cls.date_update.strftime("%Y-%m-%d %H:%M")
+		return dict

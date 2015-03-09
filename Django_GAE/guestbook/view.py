@@ -1,5 +1,6 @@
 from google.appengine.api import users
 import urllib
+import logging
 
 from django.views.generic.base import TemplateView
 from django import forms
@@ -7,7 +8,7 @@ from django.views.generic.edit import FormView
 from django.views.generic import View
 from django.http import HttpResponseRedirect
 
-from guestbook.model import Greeting, Guestbook, Author, DEFAULT_GUESTBOOK_NAME
+from model import Greeting, DEFAULT_GUESTBOOK_NAME
 
 
 class MainView(TemplateView):
