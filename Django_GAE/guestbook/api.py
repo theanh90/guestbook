@@ -37,16 +37,16 @@ class EditForm(forms.Form):
 class GreetingListService(JSONResponseMixin, FormView):
 
 	def get(self, request, *args, **kwargs):
-		greeing_per_page = 2
+		greeing_per_page = 20
 		guesbook_name = kwargs['guestbook_name']
 		cursor = self.request.GET.get('cursor')
 		if cursor:
 			try:
-				data = Greeting.greetings_to_dic(guesbook_name, greeing_per_page, cursor)
+				data = Greeting.greetings_to_list(guesbook_name, greeing_per_page, cursor)
 			except:
 				raise Http404("This cursor is wrong!!")
 		else:
-			data = Greeting.greetings_to_dic(guesbook_name, greeing_per_page)
+			data = Greeting.greetings_to_list(guesbook_name, greeing_per_page)
 		context = {
 			'guesbookname': guesbook_name, 'more': data[2], 'next_cursor': data[1].urlsafe(),
 			'greetings': data[0]}
@@ -112,7 +112,7 @@ class GreetingService(JSONResponseMixin, FormView):
 		guestbook_name = self.kwargs['guestbook_name']
 		id = self.kwargs['id']
 		key = ndb.Key(Guestbook, guestbook_name, Greeting, int(id))
-		if Greeting.delete_greeting(key):
+		if Greeting.delete_greeting(key.urlsafe()):
 			HttpResponse(status=204)
 		else:
 			Http404("Failed to delete a Greeting!!")

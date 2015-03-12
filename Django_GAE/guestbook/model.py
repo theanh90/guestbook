@@ -49,10 +49,10 @@ class Greeting(ndb.Model):
 			return greetings
 
 	@classmethod
-	def get_list_paging(cls, guestbook_name, count, cursor):
+	def get_list_paging(cls, guestbook_name, greeing_per_page, cursor):
 		greetings_query = cls.query(
 			ancestor=Guestbook.get_key(guestbook_name)).order(-Greeting.date)
-		result = greetings_query.fetch_page(count, start_cursor=ndb.Cursor(urlsafe=cursor))
+		result = greetings_query.fetch_page(greeing_per_page, start_cursor=ndb.Cursor(urlsafe=cursor))
 		return result
 
 	@classmethod
@@ -86,7 +86,7 @@ class Greeting(ndb.Model):
 		greeting.key.delete()
 
 	@classmethod
-	def greetings_to_dic(cls, guestbook_name=DEFAULT_GUESTBOOK_NAME, count=10, cursor=None):
+	def greetings_to_list(cls, guestbook_name=DEFAULT_GUESTBOOK_NAME, count=10, cursor=None):
 		greetings, next_curs, more = cls.get_list_paging(guestbook_name, count, cursor)
 		list = []
 		for greeting in greetings:
