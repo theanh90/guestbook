@@ -1,13 +1,11 @@
 import json
-import logging
 
 from django.http import HttpResponse
 from django.views.generic.edit import FormView
-from django import forms
 from django.http import Http404
-from google.appengine.ext import ndb
 
 from model import Greeting, Guestbook
+from form import ApiEditForm
 
 
 class JSONResponseMixin(object):
@@ -29,31 +27,30 @@ class JSONResponseMixin(object):
 		return json.dumps(context)
 
 
-class EditForm(forms.Form):
-	message = forms.CharField(label='Message', max_length=10, required=True)
-	book_name = forms.CharField(widget=forms.HiddenInput)
-
-
 class GreetingListService(JSONResponseMixin, FormView):
 
+	# GET /api/guestbook/<guestbook_name>/greeting?cursor: Get list greetings API
 	def get(self, request, *args, **kwargs):
-		greeing_per_page = 2
+		greeing_per_page = 3
 		guesbook_name = kwargs['guestbook_name']
 		cursor = self.request.GET.get('cursor')
 		if cursor:
 			try:
-				data = Greeting.greetings_to_dic(guesbook_name, greeing_per_page, cursor)
+				data = Greeting.greetings_to_dict(guesbook_name, greeing_per_page, cursor)
 			except:
-				raise Http404("This cursor is wrong!!")
+				raise Http404("This URL is wrong!!")
 		else:
-			data = Greeting.greetings_to_dic(guesbook_name, greeing_per_page)
-		context = {
-			'guesbookname': guesbook_name, 'more': data[2], 'next_cursor': data[1].urlsafe(),
-			'greetings': data[0]}
+			data = Greeting.greetings_to_dict(guesbook_name, greeing_per_page)
+		context = {}
+		if data[0]:
+			context = {
+				'guesbookname': guesbook_name, 'more': data[2], 'next_cursor': data[1].urlsafe(),
+				'greetings': data[0]}
 
 		return self.render_to_response(context)
 
-	form_class = EditForm
+	# POST /api/guestbook/<guestbook_name>/greeting: Create new greeting API
+	form_class = ApiEditForm
 
 	def form_valid(self, form):
 		guestbook_name = form.cleaned_data['book_name']
@@ -70,19 +67,21 @@ class GreetingListService(JSONResponseMixin, FormView):
 
 class GreetingService(JSONResponseMixin, FormView):
 
+	# GET /api/guestbook/<guestbook_name>/greeting/<id>: Get greeting API
 	def get(self, request, *args, **kwargs):
-		guesbook_name = kwargs['guestbook_name']
+		guestbook_name = kwargs['guestbook_name']
 		id = kwargs['id']
-		greeting = ndb.Key(Guestbook, guesbook_name, Greeting, int(id)).get()
+		key = Greeting.get_key(id, guestbook_name)
+		greeting = Greeting.get_greeting(key)
 		if not greeting:
 			raise Http404("Cannot retrieve the Greeting!!")
-		context = greeting.entity_to_dic()
-		context['id'] = id
-		context['guestbook_name'] = guesbook_name
+		context = greeting.to_dict()
+		context['guestbook_name'] = guestbook_name
 
 		return self.render_to_response(context)
 
-	form_class = EditForm
+	# PUT /api/guestbook/<guestbook_name>/greeting/<id>: Edit greeting API
+	form_class = ApiEditForm
 
 	# def get_initial(self):
 	# 	guestbook_name = self.request.GET.get('guestbook_name')
@@ -99,7 +98,7 @@ class GreetingService(JSONResponseMixin, FormView):
 		guestbook_name = self.kwargs['guestbook_name']
 		id = self.kwargs['id']
 		message = form.cleaned_data['message']
-		key = ndb.Key(Guestbook, guestbook_name, Greeting, int(id))
+		key = Greeting.get_key(id, guestbook_name)
 		if Greeting.update_message(key, message):
 			HttpResponse(status=204)
 		else:
@@ -108,10 +107,11 @@ class GreetingService(JSONResponseMixin, FormView):
 	def form_invalid(self, form):
 		return HttpResponse(status=400)
 
+	# DELETE /api/guestbook/<guestbook_name>/greeting/<id>: Delete greeting API
 	def delete(self, request, *args, **kwargs):
 		guestbook_name = self.kwargs['guestbook_name']
 		id = self.kwargs['id']
-		key = ndb.Key(Guestbook, guestbook_name, Greeting, int(id))
+		key = Greeting.get_key(id, guestbook_name)
 		if Greeting.delete_greeting(key):
 			HttpResponse(status=204)
 		else:
