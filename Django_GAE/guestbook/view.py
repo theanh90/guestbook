@@ -1,14 +1,13 @@
 from google.appengine.api import users
 import urllib
-import logging
 
 from django.views.generic.base import TemplateView
-from django import forms
 from django.views.generic.edit import FormView
 from django.views.generic import View
 from django.http import HttpResponseRedirect
 
 from model import Greeting, DEFAULT_GUESTBOOK_NAME
+from form import SignForm, EditForm
 
 
 class MainView(TemplateView):
@@ -35,18 +34,6 @@ class MainView(TemplateView):
 		context['url'] = url
 		context['url_linktext'] = url_linktext
 		return context
-
-
-class SignForm(forms.Form):
-	greeting_message = forms.CharField(
-		label="Greeting message", widget=forms.Textarea, required=True, max_length=100)
-	book_name = forms.CharField(label='Guestbook name', max_length=10, required=True)
-
-
-class EditForm(forms.Form):
-	message = forms.CharField(label='Message', max_length=10, required=True)
-	key = forms.CharField(widget=forms.HiddenInput)
-	book_name = forms.CharField(widget=forms.HiddenInput)
 
 
 class SignView(FormView):
@@ -85,13 +72,13 @@ class GreetingEditView(FormView):
 	def get_initial(self):
 		guestbook_name = self.request.GET.get('guestbook_name', DEFAULT_GUESTBOOK_NAME)
 		key = self.request.GET.get('key')
+		initial = super(GreetingEditView, self).get_initial()
 		if key:
 			greeting = Greeting.get_greeting(key)
-			initial = super(GreetingEditView, self).get_initial()
 			initial['message'] = greeting.content
 			initial['book_name'] = guestbook_name
 			initial['key'] = key
-			return initial
+		return initial
 
 	def form_valid(self, form):
 		guestbook_name = form.cleaned_data['book_name']

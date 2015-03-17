@@ -32,6 +32,10 @@ class Greeting(ndb.Model):
 	date_update = ndb.DateTimeProperty()
 	date = ndb.DateTimeProperty(auto_now_add=True)
 
+	@classmethod
+	def get_key(cls, id, guestbook_name=DEFAULT_GUESTBOOK_NAME):
+		return ndb.Key(Guestbook, guestbook_name, cls, int(id)).urlsafe()
+
 	# Use Ggoogle Api Memcache for caching query result.
 	@classmethod
 	def get_list(cls, guestbook_name=DEFAULT_GUESTBOOK_NAME, count=10):
@@ -86,21 +90,22 @@ class Greeting(ndb.Model):
 		greeting.key.delete()
 
 	@classmethod
-	def greetings_to_dic(cls, guestbook_name=DEFAULT_GUESTBOOK_NAME, count=10, cursor=None):
+	def greetings_to_dict(cls, guestbook_name=DEFAULT_GUESTBOOK_NAME, count=10, cursor=None):
 		greetings, next_curs, more = cls.get_list_paging(guestbook_name, count, cursor)
 		list = []
 		for greeting in greetings:
-			list.append(greeting.entity_to_dic())
+			list.append(greeting.to_dict())
 
 		return list, next_curs, more
 
-	def entity_to_dic(cls):
+	def to_dict(self):
 		dict = {}
-		dict['content'] = cls.content
-		dict['date'] = cls.date.strftime("%Y-%m-%d %H:%M")
-		if cls.author:
-			dict['author'] = {'identity': cls.author.identity, 'email': cls.author.email}
-		if cls.user_update:
-			dict['user_update'] = cls.user_update
-			dict['date_update'] = cls.date_update.strftime("%Y-%m-%d %H:%M")
+		dict['content'] = self.content
+		dict['date'] = self.date.strftime("%Y-%m-%d %H:%M")
+		dict['id'] = self.key.id()
+		if self.author:
+			dict['author'] = {'identity': self.author.identity, 'email': self.author.email}
+		if self.user_update:
+			dict['user_update'] = self.user_update
+			dict['date_update'] = self.date_update.strftime("%Y-%m-%d %H:%M")
 		return dict
