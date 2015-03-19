@@ -31,20 +31,20 @@ class GreetingListService(JSONResponseMixin, FormView):
 
 	# GET /api/guestbook/<guestbook_name>/greeting?cursor: Get list greetings API
 	def get(self, request, *args, **kwargs):
-		greeing_per_page = 3
-		guesbook_name = kwargs['guestbook_name']
+		greeing_per_page = 5
+		guestbook_name = kwargs['guestbook_name']
 		cursor = self.request.GET.get('cursor')
 		if cursor:
 			try:
-				data = Greeting.greetings_to_dict(guesbook_name, greeing_per_page, cursor)
+				data = Greeting.greetings_to_dict(guestbook_name, greeing_per_page, cursor)
 			except:
 				raise Http404("This URL is wrong!!")
 		else:
-			data = Greeting.greetings_to_dict(guesbook_name, greeing_per_page)
+			data = Greeting.greetings_to_dict(guestbook_name, greeing_per_page)
 		context = {}
 		if data[0]:
 			context = {
-				'guesbookname': guesbook_name, 'more': data[2], 'next_cursor': data[1].urlsafe(),
+				'guestbookname': guestbook_name, 'more': data[2], 'next_cursor': data[1].urlsafe(),
 				'greetings': data[0]}
 
 		return self.render_to_response(context)

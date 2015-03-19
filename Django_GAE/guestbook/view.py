@@ -97,3 +97,26 @@ class GreetingDeleteView(View):
 		Greeting.delete_greeting(key)
 
 		return HttpResponseRedirect('/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
+
+
+class DojoView(TemplateView):
+
+	template_name = 'guestbook/dojo.html'
+
+	def get_context_data(self, **kwargs):
+		guestbook_name = self.request.GET.get("guestbook_name", DEFAULT_GUESTBOOK_NAME)
+		current_user = users.get_current_user()
+		if current_user:
+			url = users.create_logout_url(self.request.get_full_path())
+			url_linktext = 'Logout'
+		else:
+			url = users.create_login_url(self.request.get_full_path())
+			url_linktext = 'Login'
+
+		context = super(DojoView, self).get_context_data(**kwargs)
+		context['content'] = "helu dojo!!!"
+		context['current_user'] = current_user
+		context['guestbook_name'] = guestbook_name
+		context['url'] = url
+		context['url_linktext'] = url_linktext
+		return context
