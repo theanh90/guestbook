@@ -5,6 +5,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic import View
 from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 
 from model import Greeting, DEFAULT_GUESTBOOK_NAME
 from form import SignForm, EditForm
@@ -103,6 +104,7 @@ class DojoView(TemplateView):
 
 	template_name = 'guestbook/dojo.html'
 
+	@csrf_exempt
 	def get_context_data(self, **kwargs):
 		guestbook_name = self.request.GET.get("guestbook_name", DEFAULT_GUESTBOOK_NAME)
 		current_user = users.get_current_user()

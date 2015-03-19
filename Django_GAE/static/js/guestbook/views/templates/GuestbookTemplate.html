@@ -3,12 +3,15 @@
 	<br>
 	<div data-dojo-attach-point="addGreeting" >
 		Add Greeting:
-		<input data-dojo-attach-point="contentArea" data-dojo-type="dijit/form/Textarea"/>
-		</br>
-		Guestbook name:
-		<input value="${guestbookname}" data-dojo-attach-point="guestbookName" data-dojo-type="dijit/form/TextBox"/>
-		<br>
-		<div data-dojo-attach-point="submitButton" data-dojo-type="dijit.form.Button">Submit</div>
-		<button data-dojo-attach-point="abc" data-dojo-event="click" data-dojo-type="dijit.form.Button">zzzz</button>
+		<div data-dojo-type="dijit/form/Form" action="" method="post" id="myForm">
+			<input data-dojo-attach-point="contentArea" data-dojo-type="dijit/form/Textarea"
+					required="true" type="text" name="message"/>
+			</br>
+			Guestbook name:
+			<input name="book_name" value="${guestbookname}" data-dojo-attach-point="guestbookName" required="true" type="text"
+				   data-dojo-type="dijit/form/ValidationTextBox"/>
+			<br>
+			<button type="submit" data-dojo-attach-point="submitButton" data-dojo-type="dijit/form/Button">Submit</button>
+		</div>
 	</div>
 </div>

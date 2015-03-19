@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.http import HttpResponse
 from django.views.generic.edit import FormView
@@ -56,10 +57,14 @@ class GreetingListService(JSONResponseMixin, FormView):
 		guestbook_name = form.cleaned_data['book_name']
 		message = form.cleaned_data['message']
 		greeting_data = {'name': guestbook_name, 'content': message}
+		logging.warning("da vao day")
+		logging.warning(greeting_data)
 		if Greeting.put_from_dict(greeting_data):
+			logging.warning("true")
 			HttpResponse(status=204)
 		else:
-			Http404("Failed to add a Greeting!!")
+			logging.warning("false")
+			HttpResponse(status=404)
 
 	def form_invalid(self, form):
 		return HttpResponse(status=400)
