@@ -57,14 +57,10 @@ class GreetingListService(JSONResponseMixin, FormView):
 		guestbook_name = form.cleaned_data['book_name']
 		message = form.cleaned_data['message']
 		greeting_data = {'name': guestbook_name, 'content': message}
-		logging.warning("da vao day")
-		logging.warning(greeting_data)
 		if Greeting.put_from_dict(greeting_data):
-			logging.warning("true")
-			HttpResponse(status=204)
+			return HttpResponse(status=204)
 		else:
-			logging.warning("false")
-			HttpResponse(status=404)
+			return HttpResponse(status=404)
 
 	def form_invalid(self, form):
 		return HttpResponse(status=400)
@@ -105,9 +101,9 @@ class GreetingService(JSONResponseMixin, FormView):
 		message = form.cleaned_data['message']
 		key = Greeting.get_key(id, guestbook_name)
 		if Greeting.update_message(key, message):
-			HttpResponse(status=204)
+			return HttpResponse(status=204)
 		else:
-			Http404("Failed to edit a Greeting!!")
+			return Http404("Failed to edit a Greeting!!")
 
 	def form_invalid(self, form):
 		return HttpResponse(status=400)
@@ -117,7 +113,7 @@ class GreetingService(JSONResponseMixin, FormView):
 		guestbook_name = self.kwargs['guestbook_name']
 		id = self.kwargs['id']
 		key = Greeting.get_key(id, guestbook_name)
-		if Greeting.delete_greeting(key):
-			HttpResponse(status=204)
+		if Greeting.delete_greeting(key) is None:
+			return HttpResponse(status=204)
 		else:
-			Http404("Failed to delete a Greeting!!")
+			raise Http404("Failed to delete a Greeting!!")

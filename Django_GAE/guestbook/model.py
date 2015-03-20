@@ -69,8 +69,7 @@ class Greeting(ndb.Model):
 				identity=users.get_current_user().user_id(),
 				email=users.get_current_user().email())
 		greeting.content = dictionary['content']
-		logging.warning(greeting)
-		greeting.put()
+		return greeting.put()
 
 	@classmethod
 	def get_greeting(cls, key):

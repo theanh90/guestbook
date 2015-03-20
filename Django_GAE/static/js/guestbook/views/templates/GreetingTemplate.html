@@ -2,7 +2,23 @@
 	<hr>
 	<span data-dojo-attach-point="authorNode">${author} wrote: </span>
 	<span data-dojo-attach-point="greetingNode">${content}</span>
+
+	<div data-dojo-attach-point="editDiv" style="display: None">
+		<div data-dojo-type="dijit/form/Form" action="" id="editForm${id}">
+			<input value="${content}" type="text" name="content" data-dojo-attach-point="contentTxt" />
+			<button type="button" value="Save" data-dojo-attach-point="SaveButton">Save</button>
+			<button type="button" value="Cancel" data-dojo-attach-point="CancelButton">Cancel</button>
+		</div>
+	</div>
+
 	<span data-dojo-attach-point="dateNode"> -- Date: ${date}</span>
 	<span data-dojo-attach-point="updateByNode" style="display: None"> -- Update by: ${user_update}</span>
 	<span data-dojo-attach-point="timeUpdateNode" style="display: None"> -- Update time: ${date_update}</span>
+
+	<span data-dojo-attach-point="modify" style="display: None">
+	[
+		<span data-dojo-attach-point="edit">Edit </span>
+		<span data-dojo-attach-point="delete" style="display: None">Delete</span>
+	]
+	</span>
 </div>

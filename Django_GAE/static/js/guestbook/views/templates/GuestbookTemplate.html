@@ -1,17 +1,19 @@
 <div>
+	<div data-dojo-attach-point="guestbook_name">Guestbook name: ${bookName}</div>
+	<br>
 	<div data-dojo-attach-point="greetings" ></div>
 	<br>
 	<div data-dojo-attach-point="addGreeting" >
 		Add Greeting:
 		<div data-dojo-type="dijit/form/Form" action="" method="post" id="myForm">
 			<input data-dojo-attach-point="contentArea" data-dojo-type="dijit/form/Textarea"
-					required="true" type="text" name="message"/>
+					required="true" type="text" name="message" value=""/>
 			</br>
 			Guestbook name:
-			<input name="book_name" value="${guestbookname}" data-dojo-attach-point="guestbookName" required="true" type="text"
+			<input name="book_name" value="${bookName}" data-dojo-attach-point="guestbookName" required="true" type="text"
 				   data-dojo-type="dijit/form/ValidationTextBox"/>
 			<br>
-			<button type="submit" data-dojo-attach-point="submitButton" data-dojo-type="dijit/form/Button">Submit</button>
+			<button data-dojo-attach-point="submitButton" data-dojo-type="dijit/form/Button">Submit</button>
 		</div>
 	</div>
 </div>

@@ -116,8 +116,9 @@ class DojoView(TemplateView):
 			url_linktext = 'Login'
 
 		context = super(DojoView, self).get_context_data(**kwargs)
-		context['content'] = "helu dojo!!!"
-		context['current_user'] = current_user
+		context['admin'] = users.is_current_user_admin()
+		if current_user:
+			context['current_user'] = current_user.user_id()
 		context['guestbook_name'] = guestbook_name
 		context['url'] = url
 		context['url_linktext'] = url_linktext

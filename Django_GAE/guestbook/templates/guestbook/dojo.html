@@ -1,38 +1,41 @@
 <!DOCTYPE html>
 
 <html>
-<head>
-	<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dijit/themes/soria/soria.css" />
-	<link type="text/css" rel="stylesheet" href="/static/css/main.css" />
-	<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dijit/themes/soria/soria.css" />
-</head>
-<body class="claro">
-	<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js"
-			data-dojo-config="async: true,
-							baseUrl:'//ajax.googaleapis.com/ajax/libs/dojo/1.10.0/dojo',
-							paths: {'guestbook': '/static/js/guestbook'},
-							parseOnLoad : true">
-	</script>
+	<head>
+		<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dijit/themes/soria/soria.css" />
+		<link type="text/css" rel="stylesheet" href="/static/css/main.css" />
+		<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dijit/themes/soria/soria.css" />
+	</head>
+	<body class="claro">
+		<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js"
+				data-dojo-config="async: true,
+								baseUrl:'//ajax.googaleapis.com/ajax/libs/dojo/1.10.0/dojo',
+								paths: {'guestbook': '/static/js/guestbook'},
+								parseOnLoad : true">
+		</script>
 
-	<div id="greeting">
-		<p>Guestbook name: {{guestbook_name}}</p>
+		<div id="greeting">
 
-	</div>
+		</div>
 
-	<div>
-		<!--<a href="/sign/?guestbook_name={{guestbook_name}}">Add greeting</a>-->
-		</br>
-		<a href="{{ url }}">{{ url_linktext }}</a>
-	</div>
+		<div>
+			</br>
+			<a href="{{ url }}">{{ url_linktext }}</a>
+		</div>
 
-	<script type="text/javascript">
-		require(["dojo/dom", "guestbook/GuestbookWidget", "dojo/request", "dojo/domReady!"],
-			function(dom, GuestbookWidget){
-				var id = dom.byId("greeting");
-				var widget = new GuestbookWidget().placeAt(id);
-		});
+		<script type="text/javascript">
+			var bookName = '{{guestbook_name}}';
+			var isAdmin = '{{admin}}';
+			var user = '{{current_user}}';
+			var data = {'bookName': bookName, 'user': user, 'isAdmin': (isAdmin == "True") ? 1 : 0};
+			require(["dojo/dom", "guestbook/GuestbookWidget", "dojo/request", "dojo/domReady!"],
+				function(dom, GuestbookWidget){
+					var id = dom.byId("greeting");
+					var widget = new GuestbookWidget(data).placeAt(id);
+			});
 
-	</script>
+		</script>
 
-</body>
+	<input id="csrf" value="{{ csrf_token }}" type="hidden"/>
+	</body>
 </html>
