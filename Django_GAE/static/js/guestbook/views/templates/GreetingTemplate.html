@@ -4,8 +4,9 @@
 	<span data-dojo-attach-point="greetingNode">${content}</span>
 
 	<div data-dojo-attach-point="editDiv" style="display: None">
-		<div data-dojo-type="dijit/form/Form" action="" id="editForm${id}">
-			<input value="${content}" type="text" name="content" data-dojo-attach-point="contentTxt" />
+		<div data-dojo-type="dijit/form/Form" action="" id="editForm${id}" method="put">
+			<input data-dojo-type="dijit/form/Textarea" value="${content}" type="text"
+                   name="message" data-dojo-attach-point="message" />
 			<button type="button" value="Save" data-dojo-attach-point="SaveButton">Save</button>
 			<button type="button" value="Cancel" data-dojo-attach-point="CancelButton">Cancel</button>
 		</div>

@@ -68,7 +68,7 @@ define([
 		},
 
 		_submit: function(){
-			var value = dijit.byId('myForm').get('value');
+			var value = dijit.byId('addForm').get('value');
 			request.post("/api/guestbook/"+value.book_name+"/greeting/", {
 				data: {
 					book_name: value.book_name,

@@ -84,29 +84,21 @@ class GreetingService(JSONResponseMixin, FormView):
 	# PUT /api/guestbook/<guestbook_name>/greeting/<id>: Edit greeting API
 	form_class = ApiEditForm
 
-	# def get_initial(self):
-	# 	guestbook_name = self.request.GET.get('guestbook_name')
-	# 	key = self.request.GET.get('key')
-	# 	if key:
-	# 		greeting = Greeting.get_greeting(key)
-	# 		initial = super(GreetingService, self).get_initial()
-	# 		initial['message'] = greeting.content
-	# 		initial['book_name'] = guestbook_name
-	# 		initial['key'] = key
-	# 		return initial
-
-	def form_valid(self, form):
-		guestbook_name = self.kwargs['guestbook_name']
-		id = self.kwargs['id']
-		message = form.cleaned_data['message']
-		key = Greeting.get_key(id, guestbook_name)
-		if Greeting.update_message(key, message):
-			return HttpResponse(status=204)
+	def put(self, request, *args, **kwargs):
+		form = self.get_form(self.form_class)
+		logging.warning(form)
+		if form.is_valid():
+			guestbook_name = self.kwargs['guestbook_name']
+			id = self.kwargs['id']
+			message = form.cleaned_data['message']
+			key = Greeting.get_key(id, guestbook_name)
+			if Greeting.update_message(key, message):
+				return HttpResponse(status=204)
+			else:
+				raise Http404("Failed to edit a Greeting!!")
 		else:
-			return Http404("Failed to edit a Greeting!!")
+			return HttpResponse(status=400)
 
-	def form_invalid(self, form):
-		return HttpResponse(status=400)
 
 	# DELETE /api/guestbook/<guestbook_name>/greeting/<id>: Delete greeting API
 	def delete(self, request, *args, **kwargs):
