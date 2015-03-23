@@ -56,13 +56,14 @@ define([
 			var thisObj = this;
 			var idForm = "editForm" + this.id;
 			var value = dijit.byId(idForm).get('value');
-			console.log(value);
 			request.put("/api/guestbook/"+this.bookName+"/greeting/"+this.id+"/", {
 				data: {
 					book_name: this.bookName,
 					message: value.message
 				},
-				headers: { "X-CSRFToken": _cookie('csrftoken') }
+				headers: { "X-CSRFToken": _cookie('csrftoken')
+				},
+				content_type: 'application/octet-stream'
 			}).then(lang.hitch(this, function(text){
 				thisObj.guestbookWidget.loadGreeting();
 			}));

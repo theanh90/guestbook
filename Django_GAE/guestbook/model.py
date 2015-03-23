@@ -83,7 +83,7 @@ class Greeting(ndb.Model):
 		greeting.content = message
 		greeting.user_update = user
 		greeting.date_update = datetime.datetime.now()
-		greeting.put()
+		return greeting.put()
 
 	@classmethod
 	def delete_greeting(cls, key):

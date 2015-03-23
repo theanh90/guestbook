@@ -1,7 +1,6 @@
 import json
-import logging
 
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from django.views.generic.edit import FormView
 from django.http import Http404
 
@@ -85,8 +84,8 @@ class GreetingService(JSONResponseMixin, FormView):
 	form_class = ApiEditForm
 
 	def put(self, request, *args, **kwargs):
-		form = self.get_form(self.form_class)
-		logging.warning(form)
+		request.PUT = QueryDict(request.body)
+		form = self.form_class(request.PUT)
 		if form.is_valid():
 			guestbook_name = self.kwargs['guestbook_name']
 			id = self.kwargs['id']
@@ -98,7 +97,6 @@ class GreetingService(JSONResponseMixin, FormView):
 				raise Http404("Failed to edit a Greeting!!")
 		else:
 			return HttpResponse(status=400)
-
 
 	# DELETE /api/guestbook/<guestbook_name>/greeting/<id>: Delete greeting API
 	def delete(self, request, *args, **kwargs):
