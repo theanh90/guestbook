@@ -35,28 +35,37 @@ define([
 			var node = this.greetings;
 			this.loadGreeting();
 			this.own(
-				on(this.submitButton,"click", lang.hitch(this, "_submit"))
+				on(this.submitButton,"click", lang.hitch(this, "_submit")),
+				on(this.changeButton,"click", lang.hitch(this, "_changeGuestbook"))
 			);
 
 		},
+
+		_changeGuestbook:function(){
+			var value = dijit.byId('addForm').get('value');
+			this.bookName = value.book_name;
+			this.loadGreeting();
+		},
+
 		_cleanGreeting: function(){
 			// Destroy exist greetings
 			dojo.query('.greetingWidget').forEach(function(node){
 			   	dijit.byNode(node).destroyRecursive(true); // destroy ID
 				contruct.destroy(node); //destroy innerHTML
 			});
+			this.greetings.innerHTML = "";
 		},
 
 		loadGreeting: function(){
 			var node = this.greetings;
 			var thisObj = this;
-
 			this._cleanGreeting();
 
 			request("/api/guestbook/"+this.bookName+"/greeting/", {
 				handleAs: "json"
 			}).then(function(data){
-				array.forEach(data.greetings, function(greeting){
+				if (JSON.stringify(data)!="{}"){
+					array.forEach(data.greetings, function(greeting){
 					greeting.user = thisObj.user;
 					greeting.isAdmin = thisObj.isAdmin;
 					greeting.bookName = thisObj.bookName;
@@ -64,7 +73,14 @@ define([
 					var greeWidget = new GreetingWidget(greeting);
 					greeWidget.placeAt(node);
 				});
+				}
+				else{
+					thisObj.greetings.innerHTML = "This Guestbook is empty!!";
+				}
+
 			});
+			this.guestbook_name.innerHTML = "Guestbook name: " + this.bookName;
+			this.contentArea.set("value", "");
 		},
 
 		_submit: function(){
@@ -78,8 +94,6 @@ define([
 			}).then(lang.hitch(this, function(text){
 				this.bookName = value.book_name;
 				this.loadGreeting();
-				this.guestbook_name.innerHTML = "Guestbook name: " + this.bookName;
-				this.contentArea.set("value", "");
 			}));
 
 		}

@@ -90,7 +90,6 @@ define([
 
 		_setAuthorAttr: function(data){
 			if (data != "Anonymous person") {
-//				this._set('author', data.email);
 				this.authorNode.innerHTML = data.email + " wrote: ";
 			}
 		},
