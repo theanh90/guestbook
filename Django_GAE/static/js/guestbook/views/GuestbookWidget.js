@@ -4,6 +4,7 @@ define([
 		   "dojo/_base/declare",
 		   "dojo/cookie",
 		   "dojo/request",
+		   "dojo/store/JsonRest",
 		   "dojo/_base/lang",
 		   "dojo/dom-style",
 		   "dojo/mouse",
@@ -14,31 +15,25 @@ define([
 		   "dijit/form/ValidationTextBox",
 		   "dijit/form/Button",
 		   "dijit/form/Form",
-		   "dijit/_WidgetsInTemplateMixin",
-		   'dijit/_TemplatedMixin',
-		   'dijit/_WidgetBase',
-		   "guestbook/GreetingWidget",
-		   "dojo/text!./views/templates/GuestbookTemplate.html"
-	   ], function(declare, _cookie, request, lang, domStyle, mouse, on, array, contruct, textarea, textbox, button, from, _WidgetsInTemplateMixin, _TemplatedMixin,
-				   _WidgetBase, GreetingWidget, template){
-	return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
+		   "./_ViewBaseMixin",
+		   "./GreetingWidget",
+		   "dojo/text!./templates/GuestbookTemplate.html",
+		   "dojo/domReady!"
+	   ], function(declare, _cookie, request, store, lang, domStyle, mouse, on, array, contruct, textarea, textbox,
+				   button, from, _ViewBaseMixin, GreetingWidget, template){
+	return declare("GuestbookWidget", [_ViewBaseMixin], {
 		// Some default values for our author
 		// These typically map to whatever you're passing to the constructor
 		templateString: template,
-		baseClass: "guestbookWidget",
 		bookName: "de_name",
-		user: null,
-		isAdmin: 0,
 
 		postCreate: function(){
 			this.inherited(arguments);
-			var node = this.greetings;
 			this.loadGreeting();
 			this.own(
 				on(this.submitButton,"click", lang.hitch(this, "_submit")),
 				on(this.changeButton,"click", lang.hitch(this, "_changeGuestbook"))
 			);
-
 		},
 
 		_changeGuestbook:function(){
@@ -53,33 +48,33 @@ define([
 			   	dijit.byNode(node).destroyRecursive(true); // destroy ID
 				contruct.destroy(node); //destroy innerHTML
 			});
-			this.greetings.innerHTML = "";
+			this.greetingsContainerNode.innerHTML = "";
 		},
 
 		loadGreeting: function(){
-			var node = this.greetings;
-			var thisObj = this;
+			var node = this.greetingsContainerNode;
 			this._cleanGreeting();
 
 			request("/api/guestbook/"+this.bookName+"/greeting/", {
 				handleAs: "json"
-			}).then(function(data){
+			}).then(lang.hitch(this, function(data){
+				var domFrag = document.createDocumentFragment();
 				if (JSON.stringify(data)!="{}"){
-					array.forEach(data.greetings, function(greeting){
-					greeting.user = thisObj.user;
-					greeting.isAdmin = thisObj.isAdmin;
-					greeting.bookName = thisObj.bookName;
-					greeting.guestbookWidget = thisObj;
-					var greeWidget = new GreetingWidget(greeting);
-					greeWidget.placeAt(node);
-				});
+					array.forEach(data.greetings, lang.hitch(this, function(greeting){
+						greeting.bookName = this.bookName;
+						greeting.guestbookWidget = this;
+						var greeWidget = new GreetingWidget(greeting);
+						greeWidget.placeAt(domFrag);
+					}));
+					contruct.place(domFrag, node);
 				}
 				else{
-					thisObj.greetings.innerHTML = "This Guestbook is empty!!";
+					this.greetingsContainerNode.innerHTML = "This Guestbook is empty!!";
 				}
 
-			});
-			this.guestbook_name.innerHTML = "Guestbook name: " + this.bookName;
+			}));
+
+			this.guestbookNameNode.innerHTML = "Guestbook name: " + this.bookName;
 			this.contentArea.set("value", "");
 		},
 

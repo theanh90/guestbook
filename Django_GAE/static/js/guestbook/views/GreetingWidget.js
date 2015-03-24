@@ -10,18 +10,15 @@ define([
 	"dojo/on",
 	"dijit/InlineEditBox",
 	"dijit/form/Form",
-	'dijit/_TemplatedMixin',
-    'dijit/_WidgetBase',
-	"dijit/_WidgetsInTemplateMixin",
-	"dojo/text!./views/templates/GreetingTemplate.html"
-	], function(declare, _cookie, request, lang, domStyle, mouse, on, InlineEditBox, Form, _TemplatedMixin, _WidgetBase,
-				_WidgetsInTemplateMixin, template){
-	return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
+	'./_ViewBaseMixin',
+	"dojo/text!./templates/GreetingTemplate.html",
+	"dojo/_base/config"
+	], function(declare, _cookie, request, lang, domStyle, mouse, on, InlineEditBox, Form, _ViewBaseMixin, template, config){
+	return declare("GreetingWidget", [_ViewBaseMixin], {
 		// Some default values for our author
 		// These typically map to whatever you're passing to the constructor
 
 		templateString: template,
-		baseClass: "greetingWidget",
 
 		bookName: "",
 		author: "Anonymous person",
@@ -30,30 +27,31 @@ define([
 		date_update: null,
 		user_update: null,
 		id: 0,
-		user: null,
-		isAdmin: 0,
 
 		postCreate: function(){
 			this.inherited(arguments);
-			if (this.isAdmin){
-				domStyle.set(this.modify, "display", "");
-				domStyle.set(this.delete, "display", "");
+			if (config.isAdmin == 'True'){
+				domStyle.set(this.modifyNode, "display", "");
+				domStyle.set(this.deleteNode, "display", "");
 			}
 			else{
-				if (this.author.identity == parseInt(this.user)){
-					domStyle.set(this.modify, "display", "");
+				if (this.author.identity == parseInt(config.user)){
+					domStyle.set(this.modifyNode, "display", "");
 				}
 			}
 			this.own(
-				on(this.delete, "click", lang.hitch(this, "_delete")),
-				on(this.edit, "click", lang.hitch(this, "_edit")),
-				on(this.CancelButton, "click", lang.hitch(this, "_cancel")),
-				on(this.SaveButton, "click", lang.hitch(this, "_save"))
+				on(this.deleteNode, "click", lang.hitch(this, "_delete")),
+				on(this.editNode, "click", lang.hitch(this, "_edit")),
+				on(this.cancelButton, "click", lang.hitch(this, "_cancel")),
+				on(this.saveButton, "click", lang.hitch(this, "_save"))
 			);
 		},
 
+		startup: function(){
+			this.inherited(arguments);
+		},
+
 		_save: function(data){
-			var thisObj = this;
 			var idForm = "editForm" + this.id;
 			var value = dijit.byId(idForm).get('value');
 			request.put("/api/guestbook/"+this.bookName+"/greeting/"+this.id+"/", {
@@ -65,27 +63,26 @@ define([
 				},
 				content_type: 'application/octet-stream'
 			}).then(lang.hitch(this, function(text){
-				thisObj.guestbookWidget.loadGreeting();
+				this.guestbookWidget.loadGreeting();
 			}));
 		},
 
 		_cancel: function(data){
-			domStyle.set(this.editDiv, "display", "None");
+			domStyle.set(this.editContainerNode, "display", "None");
 		},
 
 		_edit: function (data) {
-			domStyle.set(this.editDiv, "display", "");
+			domStyle.set(this.editContainerNode, "display", "");
 		},
 
 		_delete: function(data){
-			var thisObj = this;
 			var greetingId = this.id;
 			var bookName = this.bookName;
 			request.del("/api/guestbook/" + bookName + "/greeting/" + greetingId, {
 				headers: { "X-CSRFToken": _cookie('csrftoken') }
-			}).then(function(text){
-				thisObj.guestbookWidget.loadGreeting();
-			});
+			}).then(lang.hitch(this, function(text){
+				this.guestbookWidget.loadGreeting();
+			}));
 		},
 
 		_setAuthorAttr: function(data){

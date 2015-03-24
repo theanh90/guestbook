@@ -31,7 +31,7 @@ class GreetingListService(JSONResponseMixin, FormView):
 
 	# GET /api/guestbook/<guestbook_name>/greeting?cursor: Get list greetings API
 	def get(self, request, *args, **kwargs):
-		greeing_per_page = 10
+		greeing_per_page = 5
 		guestbook_name = kwargs['guestbook_name']
 		cursor = self.request.GET.get('cursor')
 		if cursor:

@@ -11,7 +11,9 @@
 				data-dojo-config="async: true,
 								baseUrl:'//ajax.googaleapis.com/ajax/libs/dojo/1.10.0/dojo',
 								paths: {'guestbook': '/static/js/guestbook'},
-								parseOnLoad : true">
+								parseOnLoad : true,
+								isAdmin: '{{admin}}',
+								user: '{{current_user}}'">
 		</script>
 
 		<div id="greeting">
@@ -25,14 +27,8 @@
 
 		<script type="text/javascript">
 			var bookName = '{{guestbook_name}}';
-			var isAdmin = '{{admin}}';
-			var user = '{{current_user}}';
-			var data = {'bookName': bookName, 'user': user, 'isAdmin': (isAdmin == "True") ? 1 : 0};
-			require(["dojo/dom", "guestbook/GuestbookWidget", "dojo/request", "dojo/domReady!"],
-				function(dom, GuestbookWidget){
-					var id = dom.byId("greeting");
-					var widget = new GuestbookWidget(data).placeAt(id);
-			});
+			var data = {'bookName': bookName};
+			require(["guestbook/app"]);
 		</script>
 
 	<input id="csrf" value="{{ csrf_token }}" type="hidden"/>
