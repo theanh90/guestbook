@@ -52,6 +52,22 @@ class GreetingListService(JSONResponseMixin, FormView):
 	# POST /api/guestbook/<guestbook_name>/greeting: Create new greeting API
 	form_class = ApiEditForm
 
+	def post(self, request, *args, **kwargs):
+		try:
+			json_object = json.loads(self.request.body)
+		except ValueError:
+			# invalid json
+			self.request.POST = QueryDict(self.request.body)
+		else:
+			# valid json
+			self.request.POST = json_object
+
+		form = self.form_class(self.request.POST)
+		if form.is_valid():
+			return self.form_valid(form)
+		else:
+			return self.form_invalid(form)
+
 	def form_valid(self, form):
 		guestbook_name = form.cleaned_data['book_name']
 		message = form.cleaned_data['message']
@@ -84,8 +100,18 @@ class GreetingService(JSONResponseMixin, FormView):
 	form_class = ApiEditForm
 
 	def put(self, request, *args, **kwargs):
-		request.PUT = QueryDict(request.body)
-		form = self.form_class(request.PUT)
+		# request.PUT = QueryDict(request.body)
+		# form = self.form_class(request.PUT)
+		try:
+			json_object = json.loads(self.request.body)
+		except ValueError:
+			# invalid json
+			self.request.PUT = QueryDict(self.request.body)
+		else:
+			# valid json
+			self.request.PUT = json_object
+
+		form = self.form_class(self.request.PUT)
 		if form.is_valid():
 			guestbook_name = self.kwargs['guestbook_name']
 			id = self.kwargs['id']

@@ -15,22 +15,23 @@
 								isAdmin: '{{admin}}',
 								user: '{{current_user}}'">
 		</script>
+		<div id="wrapper">
+			<div id="greeting">
 
-		<div id="greeting">
+			</div>
 
+			<div>
+				</br>
+				<a href="{{ url }}">{{ url_linktext }}</a>
+			</div>
+
+			<script type="text/javascript">
+				var bookName = '{{guestbook_name}}';
+				var data = {'bookName': bookName};
+				require(["guestbook/app"]);
+			</script>
+
+			<input id="csrf" value="{{ csrf_token }}" type="hidden"/>
 		</div>
-
-		<div>
-			</br>
-			<a href="{{ url }}">{{ url_linktext }}</a>
-		</div>
-
-		<script type="text/javascript">
-			var bookName = '{{guestbook_name}}';
-			var data = {'bookName': bookName};
-			require(["guestbook/app"]);
-		</script>
-
-	<input id="csrf" value="{{ csrf_token }}" type="hidden"/>
 	</body>
 </html>

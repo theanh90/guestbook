@@ -2,8 +2,30 @@
     text-align: center;
 }
 body {
-  font-family: Verdana, Helvetica, sans-serif;
-  background-color: #DDDDDD;
-  margin:0 auto;
+	text-align: center;			
+  	font-family: Verdana, Helvetica, sans-serif;
+  	background-color: white;
+ 	margin: 10px;
+ 	padding: 10px;
+}
 
+.addForm table{
+	margin: auto;
+}
+#wrapper{
+	width: 750px;
+	margin: auto;
+	background-color: #DDD;
+	border: 1px solid gray;
+	padding: 10px;
+}
+
+.edit{
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.greetingDiv{
+	text-align: left;
 }

@@ -3,11 +3,8 @@ __author__ = 'buitheanh'
 define([
 		   "dojo/_base/declare",
 		   "dojo/cookie",
-		   "dojo/request",
-		   "dojo/store/JsonRest",
 		   "dojo/_base/lang",
 		   "dojo/dom-style",
-		   "dojo/mouse",
 		   "dojo/on",
 		   "dojo/_base/array",
 		   "dojo/dom-construct",
@@ -17,10 +14,11 @@ define([
 		   "dijit/form/Form",
 		   "./_ViewBaseMixin",
 		   "./GreetingWidget",
+		   "../store/GreetingStore",
 		   "dojo/text!./templates/GuestbookTemplate.html",
 		   "dojo/domReady!"
-	   ], function(declare, _cookie, request, store, lang, domStyle, mouse, on, array, contruct, textarea, textbox,
-				   button, from, _ViewBaseMixin, GreetingWidget, template){
+	   ], function(declare, _cookie, lang, domStyle, on, array, contruct, textarea, textbox,
+				   button, from, _ViewBaseMixin, GreetingWidget, storeApi, template){
 	return declare("GuestbookWidget", [_ViewBaseMixin], {
 		// Some default values for our author
 		// These typically map to whatever you're passing to the constructor
@@ -55,9 +53,10 @@ define([
 			var node = this.greetingsContainerNode;
 			this._cleanGreeting();
 
-			request("/api/guestbook/"+this.bookName+"/greeting/", {
-				handleAs: "json"
-			}).then(lang.hitch(this, function(data){
+			var url = "/api/guestbook/"+this.bookName+"/greeting/";
+			var storeGet = new storeApi().requestApi(url);
+
+			storeGet.query().then(lang.hitch(this, function(data){
 				var domFrag = document.createDocumentFragment();
 				if (JSON.stringify(data)!="{}"){
 					array.forEach(data.greetings, lang.hitch(this, function(greeting){
@@ -71,25 +70,27 @@ define([
 				else{
 					this.greetingsContainerNode.innerHTML = "This Guestbook is empty!!";
 				}
-
 			}));
 
-			this.guestbookNameNode.innerHTML = "Guestbook name: " + this.bookName;
+			this.guestbookNameNode.innerHTML = "Guestbook: " + this.bookName;
 			this.contentArea.set("value", "");
 		},
 
 		_submit: function(){
 			var value = dijit.byId('addForm').get('value');
-			request.post("/api/guestbook/"+value.book_name+"/greeting/", {
-				data: {
-					book_name: value.book_name,
-					message: value.message
-				},
-				headers: { "X-CSRFToken": _cookie('csrftoken') }
-			}).then(lang.hitch(this, function(text){
+			var url = "/api/guestbook/"+value.book_name+"/greeting/";
+			var data = {book_name: value.book_name, message: value.message};
+			var storeSubmit = new storeApi().requestApi(url);
+			storeSubmit.add(data).then(lang.hitch(this, function(data){
 				this.bookName = value.book_name;
 				this.loadGreeting();
-			}));
+			}), function(err){
+				if(err.status){
+					alert('Input data are invalid!!! \nPlease try again')
+				}else{
+						alert('ERROR: ' + err.status);
+				}
+			});
 
 		}
 
