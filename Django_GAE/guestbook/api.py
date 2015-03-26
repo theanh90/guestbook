@@ -41,7 +41,7 @@ class GreetingListService(JSONResponseMixin, FormView):
 				raise Http404("This URL is wrong!!")
 		else:
 			data = Greeting.greetings_to_dict(guestbook_name, greeing_per_page)
-		context = {}
+		context = None
 		if data[0]:
 			context = {
 				'guestbookname': guestbook_name, 'more': data[2], 'next_cursor': data[1].urlsafe(),

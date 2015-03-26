@@ -1,134 +1,125 @@
-__author__ = 'buitheanh'
-
 define([
-	"dojo/_base/declare",
-	"dojo/cookie",
-	"dojo/_base/fx",
-	"dojo/_base/lang",
-	"dojo/dom-style",
-	"dojo/mouse",
-	"dojo/on",
-	"dijit/InlineEditBox",
-	"dijit/form/Form",
-	'./_ViewBaseMixin',
-	"../store/GreetingStore",
-	"dojo/text!./templates/GreetingTemplate.html",
-	"dojo/_base/config"
-	], function(declare, _cookie, baseFx, lang, domStyle, mouse, on, InlineEditBox, Form, _ViewBaseMixin, storeApi, template, config){
-	return declare("GreetingWidget", [_ViewBaseMixin], {
-		// Some default values for our author
-		// These typically map to whatever you're passing to the constructor
+		"dojo/_base/declare",
+		"dojo/_base/config",
+		"dojo/_base/fx",
+		"dojo/_base/lang",
+		"dojo/cookie",
+		"dojo/dom-style",
+		"dojo/mouse",
+		"dojo/on",
+		"dojo/text!./templates/GreetingTemplate.html",
+		"./_ViewBaseMixin",
+		"../store/GreetingStore",
+		"dijit/InlineEditBox",
+		"dijit/form/Form"
+		], function(declare, config, baseFx, lang, _cookie, domStyle, mouse, on, template,
+					_ViewBaseMixin, GreetingStore){
+		return declare("GreetingWidget", [_ViewBaseMixin], {
 
-		templateString: template,
+			templateString: template,
 
-		bookName: "",
-		author: "Anonymous person",
-		content: null,
-		date: null,
-		date_update: null,
-		user_update: null,
-		id: 0,
+			bookName: "",
+			author: "Anonymous person",
+			content: null,
+			date: null,
+			date_update: null,
+			user_update: null,
+			id: 0,
 
-		// Colors for our background animation
-        baseBackgroundColor: "#DDDDDD",
-        mouseBackgroundColor: "#def",
+			// Colors for our background animation
+			baseBackgroundColor: "#DDDDDD",
+			mouseBackgroundColor: "#def",
 
-		postCreate: function(){
-			var domNode = this.domNode;
+			postCreate: function(){
+				var domNode = this.domNode;
 
-			this.inherited(arguments);
-			if (config.isAdmin == 'True'){
-				domStyle.set(this.modifyNode, "display", "");
-				domStyle.set(this.deleteNode, "display", "");
-			}
-			else{
-				if (this.author.identity == parseInt(config.user)){
+				this.inherited(arguments);
+				if (config.isAdmin == 'True'){
 					domStyle.set(this.modifyNode, "display", "");
+					domStyle.set(this.deleteNode, "display", "");
+				}
+				else{
+					if (this.author.identity == parseInt(config.user)){
+						domStyle.set(this.modifyNode, "display", "");
+					}
+				}
+				this.own(
+					on(this.deleteNode, "click", lang.hitch(this, "_delete")),
+					on(this.editNode, "click", lang.hitch(this, "_edit")),
+					on(this.cancelButton, "click", lang.hitch(this, "_cancel")),
+					on(this.saveButton, "click", lang.hitch(this, "_save")),
+					on(domNode, mouse.enter, lang.hitch(this, "changeBackground",
+														this.mouseBackgroundColor)),
+					on(domNode, mouse.leave, lang.hitch(this, "changeBackground",
+														this.baseBackgroundColor))
+				);
+			},
+
+			changeBackground: function(newColor) {
+				// If we have an animation, stop it
+				if (this.mouseAnim) {
+					this.mouseAnim.stop();
+				}
+
+				// Set up the new animation
+				this.mouseAnim = baseFx.animateProperty({
+					node: this.domNode,
+					properties: {
+						backgroundColor: newColor
+					},
+					onEnd: lang.hitch(this, function() {
+						// Clean up our mouseAnim property
+						this.mouseAnim = null;
+					})
+				}).play();
+			},
+
+			_save: function(data){
+				var message = this.message.get('value');
+				var data = {book_name: this.bookName, message: message, id: this.id};
+
+				var deferred = GreetingStore().putGreeting(this.bookName, data);
+				deferred.then(lang.hitch(this, function(data){
+					this.guestbookWidget.loadGreeting();
+				}), function(err){
+						if(err.status == 400){
+							alert('Input data are invalid!!! \nPlease try again')
+						}else{
+							alert('ERROR: ' + err.status);
+						}
+
+				});
+			},
+
+			_cancel: function(data){
+				domStyle.set(this.editContainerNode, "display", "None");
+			},
+
+			_edit: function (data) {
+				domStyle.set(this.editContainerNode, "display", "");
+			},
+
+			_delete: function(data){
+				var deferred = GreetingStore().delGreeting(this.bookName, this.id);
+				deferred.then(lang.hitch(this, function(text){
+					this.guestbookWidget.loadGreeting();
+				}), function (err) {
+					alert("Failed to delete greeting" + err);
+				});
+			},
+
+			_setAuthorAttr: function(data){
+				if (data != "Anonymous person") {
+					this.authorNode.innerHTML = data.email;
+				}
+			},
+
+			_setDate_updateAttr: function(data){
+				if (data != null){
+					domStyle.set(this.updateByNode, "display", "");
+					domStyle.set(this.timeUpdateNode, "display", "");
 				}
 			}
-			this.own(
-				on(this.deleteNode, "click", lang.hitch(this, "_delete")),
-				on(this.editNode, "click", lang.hitch(this, "_edit")),
-				on(this.cancelButton, "click", lang.hitch(this, "_cancel")),
-				on(this.saveButton, "click", lang.hitch(this, "_save")),
-				on(domNode, mouse.enter, lang.hitch(this, "changeBackground", this.mouseBackgroundColor)),
-				on(domNode, mouse.leave, lang.hitch(this, "changeBackground", this.baseBackgroundColor))
-			);
-		},
-
-		changeBackground: function(newColor) {
-			// If we have an animation, stop it
-			if (this.mouseAnim) {
-				this.mouseAnim.stop();
-			}
-
-			// Set up the new animation
-			this.mouseAnim = baseFx.animateProperty({
-				node: this.domNode,
-				properties: {
-					backgroundColor: newColor
-				},
-				onEnd: lang.hitch(this, function() {
-					// Clean up our mouseAnim property
-					this.mouseAnim = null;
-				})
-			}).play();
-		},
-
-		startup: function(){
-			this.inherited(arguments);
-		},
-
-		_save: function(data){
-			var idForm = "editForm" + this.id;
-			var value = dijit.byId(idForm).get('value');
-
-			var url = "/api/guestbook/"+this.bookName+"/greeting/";
-			data = {book_name: this.bookName, message: value.message, id: this.id};
-			var storeEdit = new storeApi().requestApi(url);
-			storeEdit.put(data).then(lang.hitch(this, function(data){
-				this.guestbookWidget.loadGreeting();
-			}), function(err){
-					if(err.status){
-						alert('Input data are invalid!!! \nPlease try again')
-					}else{
-						alert('ERROR: ' + err.status);
-					}
-
-			});
-		},
-
-		_cancel: function(data){
-			domStyle.set(this.editContainerNode, "display", "None");
-		},
-
-		_edit: function (data) {
-			domStyle.set(this.editContainerNode, "display", "");
-		},
-
-		_delete: function(data){
-			var greetingId = this.id;
-			var bookName = this.bookName;
-			var url = "/api/guestbook/" + bookName + "/greeting/" + greetingId;
-
-			var storeDelete = new storeApi().requestApi(url);
-			storeDelete.remove().then(lang.hitch(this, function(text){
-				this.guestbookWidget.loadGreeting();
-			}));
-		},
-
-		_setAuthorAttr: function(data){
-			if (data != "Anonymous person") {
-				this.authorNode.innerHTML = data.email + " wrote: ";
-			}
-		},
-
-		_setDate_updateAttr: function(data){
-			if (data != null){
-				domStyle.set(this.updateByNode, "display", "");
-				domStyle.set(this.timeUpdateNode, "display", "");
-			}
-		}
-    });
+		});
 
 });

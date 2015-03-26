@@ -1,5 +1,3 @@
-__author__ = 'buitheanh'
-
 define([
 		"dojo/_base/declare",
 		"dojo/_base/array",
@@ -9,13 +7,30 @@ define([
 	   ], function(declare, array, lang, store, _cookie){
 	return declare([], {
 
-		requestApi:function(url){
+		getGreeting:function(guestbook){
+			var url = "/api/guestbook/"+guestbook+"/greeting/";
+			var storeJson = new store({
+				target: url
+			});
+			return storeJson.query();
+		},
+
+		putGreeting:function(guestbook, data){
+			var url = "/api/guestbook/"+guestbook+"/greeting/";
 			var storeJson = new store({
 				target: url,
 				headers: { "X-CSRFToken": _cookie('csrftoken') }
 			});
-			return storeJson;
+			return storeJson.put(data);
+		},
 
+		delGreeting:function(guestbook, id){
+			var url = "/api/guestbook/"+guestbook+"/greeting/"+id;
+			var storeJson = new store({
+				target: url,
+				headers: { "X-CSRFToken": _cookie('csrftoken') }
+			});
+			return storeJson.remove();
 		}
 
 	});

@@ -1,25 +1,28 @@
-<div class="greetingDiv">
+<div>
 	<hr>
-	<span data-dojo-attach-point="authorNode">${author} wrote: </span>
+	<span data-dojo-attach-point="authorNode">${author}</span>
+	<span>wrote</span>
 	<span data-dojo-attach-point="greetingNode">${content}</span>
 
 	<div data-dojo-attach-point="editContainerNode" style="display: None">
-		<div data-dojo-type="dijit/form/Form" action="" id="editForm${id}">
-			<input data-dojo-type="dijit/form/Textarea" value="${content}" type="text"
-                   name="message" data-dojo-attach-point="message" />
-			<button type="button" value="Save" data-dojo-attach-point="saveButton">Save</button>
-			<button type="button" value="Cancel" data-dojo-attach-point="cancelButton">Cancel</button>
-		</div>
+
+		<input data-dojo-type="dijit/form/Textarea" value="${content}" type="text"
+				data-dojo-attach-point="message" />
+		<button type="button" value="Save" data-dojo-attach-point="saveButton">Save</button>
+		<button type="button" value="Cancel" data-dojo-attach-point="cancelButton">Cancel</button>
+
 	</div>
 
 	<span data-dojo-attach-point="dateNode"> -- Date: ${date}</span>
 	<span data-dojo-attach-point="updateByNode" style="display: None"> -- Update by: ${user_update}</span>
-	<span data-dojo-attach-point="timeUpdateNode" style="display: None"> -- Update time: ${date_update}</span>
+	<span data-dojo-attach-point="timeUpdateNode" style="display: None"> -- Update time: ${date_update}
+	</span>
 
 	<span data-dojo-attach-point="modifyNode" style="display: None">
 	[
 		<span class="edit" data-dojo-attach-point="editNode">Edit</span>
-		<span></span> </span><span class="edit" data-dojo-attach-point="deleteNode" style="display: None">Delete</span>
+		<span></span>
+		<span class="edit" data-dojo-attach-point="deleteNode" style="display: None">Delete</span>
 	]
 	</span>
 </div>

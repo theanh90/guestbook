@@ -1,27 +1,24 @@
-__author__ = 'buitheanh'
-
 define([
-		   "dojo/_base/declare",
-		   "dojo/cookie",
-		   "dojo/_base/lang",
-		   "dojo/dom-style",
-		   "dojo/on",
-		   "dojo/_base/array",
-		   "dojo/dom-construct",
-		   "dijit/form/Textarea",
-		   "dijit/form/ValidationTextBox",
-		   "dijit/form/Button",
-		   "dijit/form/Form",
-		   "./_ViewBaseMixin",
-		   "./GreetingWidget",
-		   "../store/GreetingStore",
-		   "dojo/text!./templates/GuestbookTemplate.html",
-		   "dojo/domReady!"
-	   ], function(declare, _cookie, lang, domStyle, on, array, contruct, textarea, textbox,
-				   button, from, _ViewBaseMixin, GreetingWidget, storeApi, template){
-	return declare("GuestbookWidget", [_ViewBaseMixin], {
-		// Some default values for our author
-		// These typically map to whatever you're passing to the constructor
+		"dojo/_base/declare",
+		"dojo/_base/lang",
+		"dojo/_base/array",
+		"dojo/cookie",
+		"dojo/dom-style",
+		"dojo/on",
+		"dojo/dom-construct",
+		"dojo/text!./templates/GuestbookTemplate.html",
+		"./_ViewBaseMixin",
+		"../store/GreetingStore",
+		"./GreetingWidget",
+		"dijit/form/Textarea",
+		"dijit/form/ValidationTextBox",
+		"dijit/form/Button",
+		"dijit/form/Form",
+		"dojo/domReady!"
+		], function(declare, lang, array, _cookie, domStyle, on, contruct, template, _ViewBaseMixin,
+					GreetingStore, GreetingWidget){
+	return declare([_ViewBaseMixin], {
+
 		templateString: template,
 		bookName: "de_name",
 
@@ -35,16 +32,15 @@ define([
 		},
 
 		_changeGuestbook:function(){
-			var value = dijit.byId('addForm').get('value');
-			this.bookName = value.book_name;
+			this.bookName = this.guestbookName.get('value');
 			this.loadGreeting();
 		},
 
 		_cleanGreeting: function(){
 			// Destroy exist greetings
 			dojo.query('.greetingWidget').forEach(function(node){
-			   	dijit.byNode(node).destroyRecursive(true); // destroy ID
-				contruct.destroy(node); //destroy innerHTML
+				dijit.byNode(node).destroyRecursive(true); // destroy ID
+				contruct.destroy(node); // destroy innerHTML
 			});
 			this.greetingsContainerNode.innerHTML = "";
 		},
@@ -53,17 +49,15 @@ define([
 			var node = this.greetingsContainerNode;
 			this._cleanGreeting();
 
-			var url = "/api/guestbook/"+this.bookName+"/greeting/";
-			var storeGet = new storeApi().requestApi(url);
-
-			storeGet.query().then(lang.hitch(this, function(data){
+			var deferred = GreetingStore().getGreeting(this.bookName);
+			deferred.then(lang.hitch(this, function(data){
 				var domFrag = document.createDocumentFragment();
-				if (JSON.stringify(data)!="{}"){
+				if (data != null){
 					array.forEach(data.greetings, lang.hitch(this, function(greeting){
-						greeting.bookName = this.bookName;
 						greeting.guestbookWidget = this;
 						var greeWidget = new GreetingWidget(greeting);
 						greeWidget.placeAt(domFrag);
+						greeWidget.startup();
 					}));
 					contruct.place(domFrag, node);
 				}
@@ -73,22 +67,23 @@ define([
 			}));
 
 			this.guestbookNameNode.innerHTML = "Guestbook: " + this.bookName;
-			this.contentArea.set("value", "");
+			this.greeting.set("value", "");
 		},
 
 		_submit: function(){
-			var value = dijit.byId('addForm').get('value');
-			var url = "/api/guestbook/"+value.book_name+"/greeting/";
-			var data = {book_name: value.book_name, message: value.message};
-			var storeSubmit = new storeApi().requestApi(url);
-			storeSubmit.add(data).then(lang.hitch(this, function(data){
-				this.bookName = value.book_name;
+			var book_name = this.guestbookName.get('value');
+			var message = this.greeting.get('value');
+			var data = {book_name: book_name, message: message};
+
+			var deferred = GreetingStore().putGreeting(book_name, data);
+			deferred.then(lang.hitch(this, function(data){
+				this.bookName = book_name;
 				this.loadGreeting();
 			}), function(err){
 				if(err.status){
-					alert('Input data are invalid!!! \nPlease try again')
+					alert('Input data is invalid!!! \nPlease try again')
 				}else{
-						alert('ERROR: ' + err.status);
+						alert('ERROR code: ' + err.status);
 				}
 			});
 

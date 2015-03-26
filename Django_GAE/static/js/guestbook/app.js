@@ -1,17 +1,17 @@
 define([
-	'dojo/dom',
 	'dojo/_base/config',
 	'dojo/_base/window',
+	'dojo/dom',
 	'dojo/parser',
 	'dojo/ready',
 	'./views/GuestbookWidget'
-], function(dom, config, win, parser, ready, Guestbook) {
+], function(config, win, dom, parser, ready, GuestbookWidget) {
 	ready(function() {
 		if (!config.parseOnLoad) {
 			parser.parse();
 		}
-		var view = new Guestbook(data),
-			position = dom.byId("greeting");
+		var view = new GuestbookWidget(data),
+			position = dom.byId("guestbook");
 		view.placeAt(position);
 		view.startup();
 	});

@@ -3,38 +3,43 @@
 	<br>
 	<div data-dojo-attach-point="greetingsContainerNode" ></div>
 	<br>
-	<div data-dojo-attach-point="addGreetingContainerNode" class="addForm" >
 
+	<div data-dojo-attach-point="pagingNode" style="display: None">
+		<a href=""> Next </a>
+	</div>
 
-		<div data-dojo-type="dijit/form/Form" action="" id="addForm">
+	<div data-dojo-attach-point="addGreetingContainerNode" >
 
-			<table>
-				<tr>
-					<td>Add Greeting:</td>
-					<td>
-						<input data-dojo-attach-point="contentArea" data-dojo-type="dijit/form/Textarea"
-					required="true" type="text" name="message" value=""/>
-					</td>
-				</tr>
+		<table>
+			<tr>
+				<td>Add Greeting:</td>
+				<td>
+					<input data-dojo-attach-point="greeting" data-dojo-type="dijit/form/Textarea"
+						required="true" type="text"/>
+				</td>
+			</tr>
 
-				<tr>
-					<td>Guestbook name:</td>
-					<td>
-						<input name="book_name" value="${bookName}" data-dojo-attach-point="guestbookName" required="true"
-							   type="text" data-dojo-type="dijit/form/ValidationTextBox"/>
-					</td>
-				</tr>
+			<tr>
+				<td>Guestbook name:</td>
+				<td>
+					<input value="${bookName}" data-dojo-attach-point="guestbookName" required="true"
+						type="text" data-dojo-type="dijit/form/ValidationTextBox"/>
+				</td>
+			</tr>
 
-				<tr>
-					<td colspan="2"><button data-dojo-attach-point="changeButton" type="button">Change Guestbook</button></td>
-				</tr>
+			<tr>
+				<td colspan="2">
+					<button data-dojo-attach-point="changeButton" type="button">Change Guestbook
+					</button>
+				</td>
+			</tr>
 
-				<tr>
-					<td colspan="2"><button data-dojo-attach-point="submitButton" type="button">Submit</button></td>
-				</tr>
-			</table>
-
-		</div>
+			<tr>
+				<td colspan="2">
+					<button data-dojo-attach-point="submitButton" type="button">Submit</button>
+				</td>
+			</tr>
+		</table>
 
 	</div>
 </div>

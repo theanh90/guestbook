@@ -95,12 +95,13 @@ class Greeting(ndb.Model):
 		greetings, next_curs, more = cls.get_list_paging(guestbook_name, count, cursor)
 		list = []
 		for greeting in greetings:
-			list.append(greeting.to_dict())
+			list.append(greeting.to_dict(guestbook_name))
 
 		return list, next_curs, more
 
-	def to_dict(self):
+	def to_dict(self, guestbook_name=DEFAULT_GUESTBOOK_NAME):
 		dict = {}
+		dict['bookName'] = guestbook_name
 		dict['content'] = self.content
 		dict['date'] = self.date.strftime("%Y-%m-%d %H:%M")
 		dict['id'] = self.key.id()

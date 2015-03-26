@@ -9,7 +9,7 @@ body {
  	padding: 10px;
 }
 
-.addForm table{
+table{
 	margin: auto;
 }
 #wrapper{
@@ -26,6 +26,6 @@ body {
 	cursor: pointer;
 }
 
-.greetingDiv{
+.greetingWidget{
 	text-align: left;
 }
