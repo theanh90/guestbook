@@ -2,7 +2,12 @@
 	<hr>
 	<span data-dojo-attach-point="authorNode">${author}</span>
 	<span>wrote</span>
-	<span data-dojo-attach-point="greetingNode">${content}</span>
+	<span data-dojo-type="dijit/InlineEditBox" data-dojo-attach-point="greeting"
+			data-dojo-props="editor:'dijit/form/ValidationTextBox', autoSave: false,
+				required: true, regExp:'.{10}', editorParams:{constraints: {places:0} }">
+
+		${content}
+	</span>
 
 	<div data-dojo-attach-point="editContainerNode" style="display: None">
 
@@ -10,6 +15,11 @@
 				data-dojo-attach-point="message" data-dojo-props="regExp:'.{10}',
 				invalidMessage:'Max length 10 characters!'"
 				style="length: 500px"/>
+
+		<!--<span data-dojo-type="dijit/InlineEditBox" data-dojo-props="editor:'dijit/form/ValidationTextBox',-->
+			<!--invalidMessage:'Max length 10 characters!', regExp:'.{10}'",-->
+			<!--data-dojo-attach-point="message" value="${content}" ></span>-->
+
 		<button type="button" value="Save" data-dojo-attach-point="saveButton">Save</button>
 		<button type="button" value="Cancel" data-dojo-attach-point="cancelButton">Cancel</button>
 
@@ -21,10 +31,10 @@
 	</span>
 
 	<span data-dojo-attach-point="modifyNode" style="display: None">
-	[
-		<span class="edit" data-dojo-attach-point="editNode">Edit</span>
-		<span></span>
-		<span class="edit" data-dojo-attach-point="deleteNode" style="display: None">Delete</span>
-	]
+
+		<!--<span class="edit" data-dojo-attach-point="editNode">Edit</span>-->
+		<!--<span></span>-->
+		<span class="edit" data-dojo-attach-point="deleteNode" style="display: None">[ Delete ]</span>
+
 	</span>
 </div>

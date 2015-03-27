@@ -11,6 +11,7 @@ define([
 		"./GreetingWidget",
 		"dijit/form/Textarea",
 		"dijit/form/ValidationTextBox",
+		"dijit/InlineEditBox",
 		"dijit/form/Button",
 		"dijit/form/Form",
 		"dojo/domReady!"

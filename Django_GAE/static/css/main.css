@@ -30,6 +30,6 @@ table{
 	text-align: left;
 }
 
-#wrapper .dijitValidationTextBoxError .dijitValidationContainer {
-	display:none;
-}
+/*#wrapper .dijitValidationTextBoxError .dijitValidationContainer {*/
+	/*display:none;*/
+/*}*/

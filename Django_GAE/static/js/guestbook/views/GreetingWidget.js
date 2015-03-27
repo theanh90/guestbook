@@ -9,7 +9,8 @@ define([
 		"dojo/text!./templates/GreetingTemplate.html",
 		"./_ViewBaseMixin",
 		"dijit/form/ValidationTextBox",
-		"dijit/form/Form"
+		"dijit/form/Form",
+		"dijit/InlineEditBox"
 		], function(declare, config, baseFx, lang, domStyle, mouse, on, template, _ViewBaseMixin){
 		return declare("GreetingWidget", [_ViewBaseMixin], {
 
@@ -42,13 +43,15 @@ define([
 				}
 				this.own(
 					on(this.deleteNode, "click", lang.hitch(this, "_delete")),
-					on(this.editNode, "click", lang.hitch(this, "_edit")),
+//					on(this.editNode, "click", lang.hitch(this, "_edit")),
 					on(this.cancelButton, "click", lang.hitch(this, "_cancel")),
 					on(this.saveButton, "click", lang.hitch(this, "_save")),
-					on(domNode, mouse.enter, lang.hitch(this, "changeBackground",
-														this.mouseBackgroundColor)),
-					on(domNode, mouse.leave, lang.hitch(this, "changeBackground",
-														this.baseBackgroundColor))
+					on(this.greeting, "change", lang.hitch(this, "_save"))
+
+//					on(domNode, mouse.enter, lang.hitch(this, "changeBackground",
+//														this.mouseBackgroundColor)),
+//					on(domNode, mouse.leave, lang.hitch(this, "changeBackground",
+//														this.baseBackgroundColor))
 				);
 			},
 
@@ -72,20 +75,25 @@ define([
 			},
 
 			_save: function(data){
-				var message = this.message.get('value');
-				var data = {book_name: this.bookName, message: message, id: this.id};
+				if(config.isAdmin == "True" || (config.user === this.author.identity)){
+					var message = this.greeting.get('value');
+					var data = {book_name: this.bookName, message: message, id: this.id};
 
-				var deferred = this.guestbookWidget.store.putGreeting(this.bookName, data);
-				deferred.then(lang.hitch(this, function(data){
-					this.guestbookWidget.loadGreeting();
-				}), function(err){
-						if(err.status == 400){
-							alert('Input data are invalid!!! \nPlease try again')
-						}else{
-							alert('ERROR: ' + err.status);
-						}
+					var deferred = this.guestbookWidget.store.putGreeting(this.bookName, data);
+					deferred.then(lang.hitch(this, function(data){
+						this.guestbookWidget.loadGreeting();
+					}), function(err){
+							if(err.status == 400){
+								alert('Input data are invalid!!! \nPlease try again')
+							}else{
+								alert('ERROR: ' + err.status);
+							}
+					});
+				}else{
+					alert("Only Administrator or Author have a permission to edit!!");
+				}
 
-				});
+
 			},
 
 			_cancel: function(data){
@@ -107,6 +115,7 @@ define([
 
 			_setAuthorAttr: function(data){
 				if (data != "Anonymous person") {
+					this.author = data;
 					this.authorNode.innerHTML = data.email;
 				}
 			},
