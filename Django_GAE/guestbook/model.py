@@ -108,6 +108,6 @@ class Greeting(ndb.Model):
 		if self.author:
 			dict['author'] = {'identity': self.author.identity, 'email': self.author.email}
 		if self.user_update:
-			dict['user_update'] = self.user_update
-			dict['date_update'] = self.date_update.strftime("%Y-%m-%d %H:%M")
+			dict['userUpdate'] = self.user_update
+			dict['dateUpdate'] = self.date_update.strftime("%Y-%m-%d %H:%M")
 		return dict

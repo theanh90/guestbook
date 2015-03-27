@@ -1,36 +1,49 @@
 define([
 		"dojo/_base/declare",
-		"dojo/_base/array",
-		"dojo/_base/lang",
 		"dojo/store/JsonRest",
-		"dojo/cookie"
-	   ], function(declare, array, lang, store, _cookie){
-	return declare([], {
+		"dojo/cookie",
+		"dojo/Stateful"
+	   ], function(declare, store, _cookie, stateful){
+	return declare([stateful], {
 
-		getGreeting:function(guestbook){
-			var url = "/api/guestbook/"+guestbook+"/greeting/";
-			var storeJson = new store({
-				target: url
-			});
-			return storeJson.query();
+		storeJson: null,
+		guestbook: "",
+
+		_guestbookGetter: function() {
+			return this.guestbook;
 		},
 
-		putGreeting:function(guestbook, data){
-			var url = "/api/guestbook/"+guestbook+"/greeting/";
-			var storeJson = new store({
-				target: url,
-				headers: { "X-CSRFToken": _cookie('csrftoken') }
-			});
-			return storeJson.put(data);
+		_guestbookSetter: function(value) {
+			this.guestbook = value;
 		},
 
-		delGreeting:function(guestbook, id){
-			var url = "/api/guestbook/"+guestbook+"/greeting/"+id;
-			var storeJson = new store({
-				target: url,
-				headers: { "X-CSRFToken": _cookie('csrftoken') }
+		constructor: function(){
+			this.inherited(arguments);
+
+			this.watch("guestbook", function(name, oldValue, value){
+				if(oldValue != value){
+					var url = "/api/guestbook/"+value+"/greeting/";
+					this.storeJson = new store({
+						target: url,
+						headers: { "X-CSRFToken": _cookie('csrftoken') }
+											   });
+				}
 			});
-			return storeJson.remove();
+		},
+
+		getGreeting: function(guestbook){
+			this.set("guestbook", guestbook);
+			return this.storeJson.query();
+		},
+
+		putGreeting: function(guestbook, data){
+			this.set("guestbook", guestbook);
+			return this.storeJson.put(data);
+		},
+
+		delGreeting: function(guestbook, id){
+			this.set("guestbook", guestbook);
+			return this.storeJson.remove(id);
 		}
 
 	});

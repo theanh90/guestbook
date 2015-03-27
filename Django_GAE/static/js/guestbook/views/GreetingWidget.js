@@ -9,11 +9,10 @@ define([
 		"dojo/on",
 		"dojo/text!./templates/GreetingTemplate.html",
 		"./_ViewBaseMixin",
-		"../store/GreetingStore",
 		"dijit/InlineEditBox",
 		"dijit/form/Form"
 		], function(declare, config, baseFx, lang, _cookie, domStyle, mouse, on, template,
-					_ViewBaseMixin, GreetingStore){
+					_ViewBaseMixin){
 		return declare("GreetingWidget", [_ViewBaseMixin], {
 
 			templateString: template,
@@ -22,8 +21,8 @@ define([
 			author: "Anonymous person",
 			content: null,
 			date: null,
-			date_update: null,
-			user_update: null,
+			dateUpdate: null,
+			userUpdate: null,
 			id: 0,
 
 			// Colors for our background animation
@@ -78,7 +77,7 @@ define([
 				var message = this.message.get('value');
 				var data = {book_name: this.bookName, message: message, id: this.id};
 
-				var deferred = GreetingStore().putGreeting(this.bookName, data);
+				var deferred = this.guestbookWidget.store.putGreeting(this.bookName, data);
 				deferred.then(lang.hitch(this, function(data){
 					this.guestbookWidget.loadGreeting();
 				}), function(err){
@@ -100,7 +99,7 @@ define([
 			},
 
 			_delete: function(data){
-				var deferred = GreetingStore().delGreeting(this.bookName, this.id);
+				var deferred = this.guestbookWidget.store.delGreeting(this.bookName, this.id);
 				deferred.then(lang.hitch(this, function(text){
 					this.guestbookWidget.loadGreeting();
 				}), function (err) {
@@ -114,7 +113,7 @@ define([
 				}
 			},
 
-			_setDate_updateAttr: function(data){
+			_setDateUpdateAttr: function(data){
 				if (data != null){
 					domStyle.set(this.updateByNode, "display", "");
 					domStyle.set(this.timeUpdateNode, "display", "");

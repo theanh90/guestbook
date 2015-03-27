@@ -21,6 +21,7 @@ define([
 
 		templateString: template,
 		bookName: "de_name",
+		store: new GreetingStore(),
 
 		postCreate: function(){
 			this.inherited(arguments);
@@ -47,19 +48,24 @@ define([
 
 		loadGreeting: function(){
 			var node = this.greetingsContainerNode;
-			this._cleanGreeting();
+			this._cleanGreeting()
 
-			var deferred = GreetingStore().getGreeting(this.bookName);
+			var deferred = this.store.getGreeting(this.bookName);
 			deferred.then(lang.hitch(this, function(data){
 				var domFrag = document.createDocumentFragment();
+				var arrayWidget =[];
 				if (data != null){
 					array.forEach(data.greetings, lang.hitch(this, function(greeting){
 						greeting.guestbookWidget = this;
 						var greeWidget = new GreetingWidget(greeting);
 						greeWidget.placeAt(domFrag);
-						greeWidget.startup();
+						arrayWidget.push(greeWidget);
 					}));
+
 					contruct.place(domFrag, node);
+					array.forEach(arrayWidget, function(widget) {
+						widget.startup();
+					})
 				}
 				else{
 					this.greetingsContainerNode.innerHTML = "This Guestbook is empty!!";
@@ -71,13 +77,13 @@ define([
 		},
 
 		_submit: function(){
-			var book_name = this.guestbookName.get('value');
+			var bookName = this.guestbookName.get('value');
 			var message = this.greeting.get('value');
-			var data = {book_name: book_name, message: message};
+			var data = {book_name: bookName, message: message};
 
-			var deferred = GreetingStore().putGreeting(book_name, data);
+			var deferred = this.store.putGreeting(bookName, data);
 			deferred.then(lang.hitch(this, function(data){
-				this.bookName = book_name;
+				this.bookName = bookName;
 				this.loadGreeting();
 			}), function(err){
 				if(err.status){
