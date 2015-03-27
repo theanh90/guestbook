@@ -2,7 +2,6 @@ define([
 		"dojo/_base/declare",
 		"dojo/_base/lang",
 		"dojo/_base/array",
-		"dojo/cookie",
 		"dojo/dom-style",
 		"dojo/on",
 		"dojo/dom-construct",
@@ -15,7 +14,7 @@ define([
 		"dijit/form/Button",
 		"dijit/form/Form",
 		"dojo/domReady!"
-		], function(declare, lang, array, _cookie, domStyle, on, contruct, template, _ViewBaseMixin,
+		], function(declare, lang, array, domStyle, on, contruct, template, _ViewBaseMixin,
 					GreetingStore, GreetingWidget){
 	return declare([_ViewBaseMixin], {
 

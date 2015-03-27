@@ -3,8 +3,8 @@ define([
 		"dojo/store/JsonRest",
 		"dojo/cookie",
 		"dojo/Stateful"
-	   ], function(declare, store, _cookie, stateful){
-	return declare([stateful], {
+	   ], function(declare, JsonRest, cookie, Stateful){
+	return declare([Stateful], {
 
 		storeJson: null,
 		guestbook: "",
@@ -23,9 +23,9 @@ define([
 			this.watch("guestbook", function(name, oldValue, value){
 				if(oldValue != value){
 					var url = "/api/guestbook/"+value+"/greeting/";
-					this.storeJson = new store({
+					this.storeJson = new JsonRest({
 						target: url,
-						headers: { "X-CSRFToken": _cookie('csrftoken') }
+						headers: { "X-CSRFToken": cookie('csrftoken') }
 											   });
 				}
 			});

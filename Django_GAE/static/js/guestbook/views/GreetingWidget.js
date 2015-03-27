@@ -3,16 +3,14 @@ define([
 		"dojo/_base/config",
 		"dojo/_base/fx",
 		"dojo/_base/lang",
-		"dojo/cookie",
 		"dojo/dom-style",
 		"dojo/mouse",
 		"dojo/on",
 		"dojo/text!./templates/GreetingTemplate.html",
 		"./_ViewBaseMixin",
-		"dijit/InlineEditBox",
+		"dijit/form/ValidationTextBox",
 		"dijit/form/Form"
-		], function(declare, config, baseFx, lang, _cookie, domStyle, mouse, on, template,
-					_ViewBaseMixin){
+		], function(declare, config, baseFx, lang, domStyle, mouse, on, template, _ViewBaseMixin){
 		return declare("GreetingWidget", [_ViewBaseMixin], {
 
 			templateString: template,

@@ -6,8 +6,10 @@
 
 	<div data-dojo-attach-point="editContainerNode" style="display: None">
 
-		<input data-dojo-type="dijit/form/Textarea" value="${content}" type="text"
-				data-dojo-attach-point="message" />
+		<input data-dojo-type="dijit/form/ValidationTextBox" value="${content}" required="true"
+				data-dojo-attach-point="message" data-dojo-props="regExp:'.{10}',
+				invalidMessage:'Max length 10 characters!'"
+				style="length: 500px"/>
 		<button type="button" value="Save" data-dojo-attach-point="saveButton">Save</button>
 		<button type="button" value="Cancel" data-dojo-attach-point="cancelButton">Cancel</button>
 

@@ -1,12 +1,12 @@
 *{
-    text-align: center;
+	text-align: center;
 }
 body {
 	text-align: center;			
-  	font-family: Verdana, Helvetica, sans-serif;
-  	background-color: white;
- 	margin: 10px;
- 	padding: 10px;
+	font-family: Verdana, Helvetica, sans-serif;
+	background-color: white;
+	margin: 10px;
+	padding: 10px;
 }
 
 table{
@@ -28,4 +28,8 @@ table{
 
 .greetingWidget{
 	text-align: left;
+}
+
+#wrapper .dijitValidationTextBoxError .dijitValidationContainer {
+	display:none;
 }
