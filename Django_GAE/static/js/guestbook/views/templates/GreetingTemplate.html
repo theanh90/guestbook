@@ -2,39 +2,19 @@
 	<hr>
 	<span data-dojo-attach-point="authorNode">${author}</span>
 	<span>wrote</span>
-	<span data-dojo-type="dijit/InlineEditBox" data-dojo-attach-point="greeting"
-			data-dojo-props="editor:'dijit/form/ValidationTextBox', autoSave: false,
-				required: true, regExp:'.{10}', editorParams:{constraints: {places:0} }">
+	<span data-dojo-attach-point="greeting" data-dojo-type="dijit/InlineEditBox"
+			data-dojo-props="editor:'dijit/form/ValidationTextBox',
+                editorParams:{required: 'true', regExp:'.{1,10}', invalidMessage:'Max length 10 characters!'}"
+            autoSave="false">
 
 		${content}
 	</span>
-
-	<div data-dojo-attach-point="editContainerNode" style="display: None">
-
-		<input data-dojo-type="dijit/form/ValidationTextBox" value="${content}" required="true"
-				data-dojo-attach-point="message" data-dojo-props="regExp:'.{10}',
-				invalidMessage:'Max length 10 characters!'"
-				style="length: 500px"/>
-
-		<!--<span data-dojo-type="dijit/InlineEditBox" data-dojo-props="editor:'dijit/form/ValidationTextBox',-->
-			<!--invalidMessage:'Max length 10 characters!', regExp:'.{10}'",-->
-			<!--data-dojo-attach-point="message" value="${content}" ></span>-->
-
-		<button type="button" value="Save" data-dojo-attach-point="saveButton">Save</button>
-		<button type="button" value="Cancel" data-dojo-attach-point="cancelButton">Cancel</button>
-
-	</div>
 
 	<span data-dojo-attach-point="dateNode"> -- Date: ${date}</span>
 	<span data-dojo-attach-point="updateByNode" style="display: None"> -- Update by: ${userUpdate}</span>
 	<span data-dojo-attach-point="timeUpdateNode" style="display: None"> -- Update time: ${dateUpdate}
 	</span>
 
-	<span data-dojo-attach-point="modifyNode" style="display: None">
+    <span class="delete" data-dojo-attach-point="deleteNode" style="display: None">[ Delete ]</span>
 
-		<!--<span class="edit" data-dojo-attach-point="editNode">Edit</span>-->
-		<!--<span></span>-->
-		<span class="edit" data-dojo-attach-point="deleteNode" style="display: None">[ Delete ]</span>
-
-	</span>
 </div>

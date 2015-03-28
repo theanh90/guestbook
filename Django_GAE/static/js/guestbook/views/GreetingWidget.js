@@ -33,19 +33,13 @@ define([
 
 				this.inherited(arguments);
 				if (config.isAdmin == 'True'){
-					domStyle.set(this.modifyNode, "display", "");
 					domStyle.set(this.deleteNode, "display", "");
+				}else if (this.author.identity != parseInt(config.user)){
+					this.greeting.set('editing', 'false');
 				}
-				else{
-					if (this.author.identity == parseInt(config.user)){
-						domStyle.set(this.modifyNode, "display", "");
-					}
-				}
+
 				this.own(
 					on(this.deleteNode, "click", lang.hitch(this, "_delete")),
-//					on(this.editNode, "click", lang.hitch(this, "_edit")),
-					on(this.cancelButton, "click", lang.hitch(this, "_cancel")),
-					on(this.saveButton, "click", lang.hitch(this, "_save")),
 					on(this.greeting, "change", lang.hitch(this, "_save"))
 
 //					on(domNode, mouse.enter, lang.hitch(this, "changeBackground",
@@ -54,6 +48,8 @@ define([
 //														this.baseBackgroundColor))
 				);
 			},
+
+
 
 			changeBackground: function(newColor) {
 				// If we have an animation, stop it
@@ -90,7 +86,7 @@ define([
 							}
 					});
 				}else{
-					alert("Only Administrator or Author have a permission to edit!!");
+					alert("Only Administrator or Owner have a permission to edit!!");
 				}
 
 

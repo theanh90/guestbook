@@ -20,7 +20,7 @@ table{
 	padding: 10px;
 }
 
-.edit{
+.delete{
 	color: blue;
 	text-decoration: underline;
 	cursor: pointer;
@@ -30,6 +30,6 @@ table{
 	text-align: left;
 }
 
-/*#wrapper .dijitValidationTextBoxError .dijitValidationContainer {*/
-	/*display:none;*/
-/*}*/
+#wrapper .dijitValidationTextBoxError .dijitValidationContainer {
+	display:none;
+}
