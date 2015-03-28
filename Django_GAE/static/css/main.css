@@ -4,7 +4,7 @@
 body {
 	text-align: center;			
 	font-family: Verdana, Helvetica, sans-serif;
-	background-color: white;
+	background-color: #ccd;
 	margin: 10px;
 	padding: 10px;
 }
@@ -15,9 +15,11 @@ table{
 #wrapper{
 	width: 750px;
 	margin: auto;
-	background-color: #DDD;
-	border: 1px solid gray;
+	background-color: #fff;
+	// border: 1px solid gray;
 	padding: 10px;
+
+    box-shadow: rgba(0,0,0, 0.5) 0px 0px 8px;
 }
 
 .delete{
@@ -32,4 +34,40 @@ table{
 
 #wrapper .dijitValidationTextBoxError .dijitValidationContainer {
 	display:none;
+}
+
+#wrapper .bookName{
+
+	-moz-border-radius: 6px 6px 6px 6px;
+    -khtml-border-radius: 6px 6px 6px 6px ;
+    -webkit-border-radius:6px 6px 6px 6px;
+    box-shadow: rgba(0,0,0, 0.2) 0px 0px 8px;
+
+	display: inline-block;
+	border:1px dashed blue;
+	color: red;
+	font-weight: bold;
+	font-size: 120%;
+	margin: 15px;
+	padding: 10px;
+}
+
+#wrapper .greetingDiv{
+	margin-bottom: 10px;
+	padding: 10px;
+
+	-moz-border-radius: 6px 6px 6px 6px;
+    -khtml-border-radius: 6px 6px 6px 6px ;
+    -webkit-border-radius:6px 6px 6px 6px;
+    box-shadow: rgba(0,0,0, 0.2) 0px 0px 8px;
+}
+
+#wrapper .addGreeting{
+	padding: 10px;
+	display: inline-block;
+	border: 1px dotted #9F2E05;
+
+	-moz-border-radius: 6px 6px 6px 6px;
+    -khtml-border-radius: 6px 6px 6px 6px ;
+    -webkit-border-radius:6px 6px 6px 6px;
 }
