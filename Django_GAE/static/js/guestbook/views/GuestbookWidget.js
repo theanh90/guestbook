@@ -81,18 +81,19 @@ define([
 			var message = this.greeting.get('value');
 			var data = {book_name: bookName, message: message};
 
-			var deferred = this.store.putGreeting(bookName, data);
-			deferred.then(lang.hitch(this, function(data){
-				this.bookName = bookName;
-				this.loadGreeting();
-			}), function(err){
-				if(err.status){
-					alert('Input data is invalid!!! \nPlease try again')
-				}else{
+			var deferred = this.store.putGreeting(data);
+			deferred.then(
+				lang.hitch(this, function(data){
+					this.bookName = bookName;
+					this.loadGreeting();
+				}),
+				function(err){
+					if(err.status){
+						alert('Input data is invalid!!! \nPlease try again')
+					}else{
 						alert('ERROR code: ' + err.status);
-				}
-			});
-
+					}
+				});
 		}
 
 	});

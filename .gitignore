@@ -1,0 +1,7 @@
+
+.idea/*
+
+
+*.pyc
+
+Django_GAE/static/js/dojo/*

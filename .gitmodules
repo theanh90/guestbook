@@ -1,0 +1,12 @@
+[submodule "static/js/dojo/util"]
+	path = static/js/dojo/util
+	url = https://github.com/dojo/util
+[submodule "Django_GAE/static/js/dojo/dijit"]
+	path = Django_GAE/static/js/dojo/dijit
+	url = https://github.com/dojo/dijit
+[submodule "Django_GAE/static/js/dojo/dojox"]
+	path = Django_GAE/static/js/dojo/dojox
+	url = https://github.com/dojo/dojox
+[submodule "Django_GAE/static/js/dojo/dojo"]
+	path = Django_GAE/static/js/dojo/dojo
+	url = https://github.com/dojo/dojo

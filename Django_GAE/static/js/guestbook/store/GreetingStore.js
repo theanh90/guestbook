@@ -36,8 +36,8 @@ define([
 			return this.storeJson.query();
 		},
 
-		putGreeting: function(guestbook, data){
-			this.set("guestbook", guestbook);
+		putGreeting: function(data){
+			this.set("guestbook", data.book_name);
 			return this.storeJson.put(data);
 		},
 
